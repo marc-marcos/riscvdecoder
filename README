@@ -1,0 +1,12 @@
+# RISC-V Decoder
+
+Simple library to decode RISC-V instructions and find to which extension do they belong. 
+
+## Roadmap
+
+- [ ] RV32I <- In progress
+- [ ] M
+- [ ] RV64I
+- [ ] A
+- [ ] F & D
+- [ ] Zicsr & Zifencei
