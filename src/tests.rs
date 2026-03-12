@@ -2,7 +2,7 @@ use super::*;
 
 #[test]
 fn test_add() {
-    let raw : u32 = 0x00c982b3;
+    let raw: u32 = 0x00c982b3;
 
     let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
 
@@ -11,12 +11,11 @@ fn test_add() {
     } else {
         panic!("Expected Ok(Instruction::Add), got {:?}", instr);
     }
-
 }
 
 #[test]
 fn test_sub() {
-    let raw : u32 = 0x41268333;
+    let raw: u32 = 0x41268333;
     let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
 
     if let Ok(Instruction::Sub { .. }) = instr {

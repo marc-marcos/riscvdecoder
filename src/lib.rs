@@ -5,14 +5,32 @@ mod tests;
 struct RawInstruction(u32);
 
 impl RawInstruction {
-    fn opcode(&self) -> u8 { (self.0 & 0x7F) as u8 }
-    fn rd(&self) -> u8     { ((self.0 >> 7) & 0x1F) as u8 }
-    fn funct3(&self) -> u8 { ((self.0 >> 12) & 0x7) as u8 }
-    fn rs1(&self) -> u8    { ((self.0 >> 15) & 0x1F) as u8 }
-    fn rs2(&self) -> u8    { ((self.0 >> 20) & 0x1F) as u8 }
-    fn funct7(&self) -> u8 { ((self.0 >> 25) & 0x7F) as u8 }
-    fn imm_store(&self) -> u16 { ((((self.0 >> 7) & 0x1F | ((self.0 >> 25) & 0x7F) << 5) << 20) as i32 >> 20).try_into().unwrap() }
-    fn imm_load(&self) -> u16 { ((self.0 >> 20) & 0xFFF) as u16 }
+    fn opcode(&self) -> u8 {
+        (self.0 & 0x7F) as u8
+    }
+    fn rd(&self) -> u8 {
+        ((self.0 >> 7) & 0x1F) as u8
+    }
+    fn funct3(&self) -> u8 {
+        ((self.0 >> 12) & 0x7) as u8
+    }
+    fn rs1(&self) -> u8 {
+        ((self.0 >> 15) & 0x1F) as u8
+    }
+    fn rs2(&self) -> u8 {
+        ((self.0 >> 20) & 0x1F) as u8
+    }
+    fn funct7(&self) -> u8 {
+        ((self.0 >> 25) & 0x7F) as u8
+    }
+    fn imm_store(&self) -> u16 {
+        ((((self.0 >> 7) & 0x1F | ((self.0 >> 25) & 0x7F) << 5) << 20) as i32 >> 20)
+            .try_into()
+            .unwrap()
+    }
+    fn imm_load(&self) -> u16 {
+        ((self.0 >> 20) & 0xFFF) as u16
+    }
     fn imm_jalr(&self) -> i32 {
         let imm = (self.0 >> 20) as i32;
         (imm << 20) >> 20
@@ -20,10 +38,10 @@ impl RawInstruction {
     fn imm_jal(&self) -> i32 {
         let inst = self.0;
 
-        let imm20      = (inst >> 31) & 0x1;
-        let imm10_1    = (inst >> 21) & 0x3FF;
-        let imm11      = (inst >> 20) & 0x1;
-        let imm19_12   = (inst >> 12) & 0xFF;
+        let imm20 = (inst >> 31) & 0x1;
+        let imm10_1 = (inst >> 21) & 0x3FF;
+        let imm11 = (inst >> 20) & 0x1;
+        let imm19_12 = (inst >> 12) & 0xFF;
 
         let res = (imm20 << 20) | (imm19_12 << 12) | (imm11 << 11) | (imm10_1 << 1);
 
@@ -32,10 +50,10 @@ impl RawInstruction {
     fn imm_branch(&self) -> i32 {
         let inst = self.0;
 
-        let imm12   = (inst >> 31) & 0x1;
-        let imm11   = (inst >> 7)  & 0x1;
+        let imm12 = (inst >> 31) & 0x1;
+        let imm11 = (inst >> 7) & 0x1;
         let imm10_5 = (inst >> 25) & 0x3F;
-        let imm4_1  = (inst >> 8)  & 0xF;
+        let imm4_1 = (inst >> 8) & 0xF;
 
         let res = (imm12 << 12) | (imm11 << 11) | (imm10_5 << 5) | (imm4_1 << 1);
 
@@ -51,72 +69,96 @@ impl RawInstruction {
 
 #[derive(Debug)]
 pub enum Instruction {
-    Add {rd:u8, rs1:u8, rs2:u8},
-    Sub {rd:u8, rs1:u8, rs2:u8},
-    Sll {rd:u8, rs1:u8, rs2:u8},
-    Slt {rd:u8, rs1:u8, rs2:u8},
-    Sltu {rd:u8, rs1:u8, rs2:u8},
-    Xor {rd:u8, rs1:u8, rs2:u8},
-    Srl {rd:u8, rs1:u8, rs2:u8},
-    Sra {rd:u8, rs1:u8, rs2:u8},
-    Or {rd:u8, rs1:u8, rs2:u8},
-    And {rd:u8, rs1:u8, rs2:u8},
+    Add { rd: u8, rs1: u8, rs2: u8 },
+    Sub { rd: u8, rs1: u8, rs2: u8 },
+    Sll { rd: u8, rs1: u8, rs2: u8 },
+    Slt { rd: u8, rs1: u8, rs2: u8 },
+    Sltu { rd: u8, rs1: u8, rs2: u8 },
+    Xor { rd: u8, rs1: u8, rs2: u8 },
+    Srl { rd: u8, rs1: u8, rs2: u8 },
+    Sra { rd: u8, rs1: u8, rs2: u8 },
+    Or { rd: u8, rs1: u8, rs2: u8 },
+    And { rd: u8, rs1: u8, rs2: u8 },
 
-    Addi {rd: u8, rs1: u8, imm: u16},
-    Slti {rd: u8, rs1: u8, imm: u16},
-    Sltiu {rd: u8, rs1: u8, imm: u16},
-    Andi {rd: u8, rs1: u8, imm: u16},
-    Ori {rd: u8, rs1: u8, imm: u16},
-    Xori {rd: u8, rs1: u8, imm: u16},
-    Slli {rd: u8, rs1: u8, imm: u16},
-    Srli {rd: u8, rs1: u8, imm: u16},
-    Srai {rd: u8, rs1: u8, imm: u16},
+    Addi { rd: u8, rs1: u8, imm: u16 },
+    Slti { rd: u8, rs1: u8, imm: u16 },
+    Sltiu { rd: u8, rs1: u8, imm: u16 },
+    Andi { rd: u8, rs1: u8, imm: u16 },
+    Ori { rd: u8, rs1: u8, imm: u16 },
+    Xori { rd: u8, rs1: u8, imm: u16 },
+    Slli { rd: u8, rs1: u8, imm: u16 },
+    Srli { rd: u8, rs1: u8, imm: u16 },
+    Srai { rd: u8, rs1: u8, imm: u16 },
 
-    Sb {rs1:u8, rs2:u8, imm:u16},
-    Sh {rs1:u8, rs2:u8, imm:u16},
-    Sw {rs1:u8, rs2:u8, imm:u16},
+    Sb { rs1: u8, rs2: u8, imm: u16 },
+    Sh { rs1: u8, rs2: u8, imm: u16 },
+    Sw { rs1: u8, rs2: u8, imm: u16 },
 
-    Lb {rd: u8, rs1: u8, imm:u16},
-    Lh {rd: u8, rs1: u8, imm:u16},
-    Lw {rd: u8, rs1: u8, imm:u16},
-    Lbu {rd: u8, rs1: u8, imm:u16},
-    Lhu {rd: u8, rs1: u8, imm:u16},
+    Lb { rd: u8, rs1: u8, imm: u16 },
+    Lh { rd: u8, rs1: u8, imm: u16 },
+    Lw { rd: u8, rs1: u8, imm: u16 },
+    Lbu { rd: u8, rs1: u8, imm: u16 },
+    Lhu { rd: u8, rs1: u8, imm: u16 },
 
-    Beq {rs1: u8, rs2: u8, imm:i32},
-    Bne {rs1: u8, rs2: u8, imm:i32},
-    Blt {rs1: u8, rs2: u8, imm:i32},
-    Bge {rs1: u8, rs2: u8, imm:i32},
-    Bltu {rs1: u8, rs2: u8, imm:i32},
-    Bgeu {rs1: u8, rs2: u8, imm:i32},
+    Beq { rs1: u8, rs2: u8, imm: i32 },
+    Bne { rs1: u8, rs2: u8, imm: i32 },
+    Blt { rs1: u8, rs2: u8, imm: i32 },
+    Bge { rs1: u8, rs2: u8, imm: i32 },
+    Bltu { rs1: u8, rs2: u8, imm: i32 },
+    Bgeu { rs1: u8, rs2: u8, imm: i32 },
 
-    Jalr {rd: u8, imm:i32},
-    Jal {rd:u8, rs1:u8, imm:i32},
+    Jalr { rd: u8, imm: i32 },
+    Jal { rd: u8, rs1: u8, imm: i32 },
 
-    Lui {rd: u8, imm:u32},
-    Auipc {rd: u8, imm:u32},
+    Lui { rd: u8, imm: u32 },
+    Auipc { rd: u8, imm: u32 },
 }
 
 #[derive(Debug)]
 pub enum Extension {
-    I
+    I,
 }
 
 impl Instruction {
     pub fn extension(&self) -> Option<Extension> {
         match self {
-            Self::Add { .. } | Self::Sub { .. } | Self::Sll { .. } |
-            Self::Slt { .. } | Self::Sltu { .. } | Self::Xor { .. } |
-            Self::Srl { .. } | Self::Sra { .. } | Self::Or { .. } |
-            Self::And { .. } | Self::Sb { .. } | Self::Sw { .. } |
-            Self::Sh { .. }  | Self::Lb { .. } | Self::Lh { .. } |
-            Self::Lw { .. } | Self::Lbu { .. } | Self::Lhu { .. } |
-            Self::Beq { .. } | Self::Bne { .. } | Self::Blt { .. } |
-            Self::Bge { .. } | Self::Bltu { .. } | Self::Bgeu { .. } |
-            Self::Jal { .. } | Self::Jalr { .. } | Self::Lui { .. } |
-            Self::Auipc { .. } | Self::Addi { .. } | Self::Slti { .. } |
-            Self::Sltiu { .. } | Self::Andi { ..  } | Self::Ori { .. } |
-            Self::Xori { .. } | Self::Slli { .. } | Self::Srli { .. } |
-            Self::Srai { .. } => Some(Extension::I),
+            Self::Add { .. }
+            | Self::Sub { .. }
+            | Self::Sll { .. }
+            | Self::Slt { .. }
+            | Self::Sltu { .. }
+            | Self::Xor { .. }
+            | Self::Srl { .. }
+            | Self::Sra { .. }
+            | Self::Or { .. }
+            | Self::And { .. }
+            | Self::Sb { .. }
+            | Self::Sw { .. }
+            | Self::Sh { .. }
+            | Self::Lb { .. }
+            | Self::Lh { .. }
+            | Self::Lw { .. }
+            | Self::Lbu { .. }
+            | Self::Lhu { .. }
+            | Self::Beq { .. }
+            | Self::Bne { .. }
+            | Self::Blt { .. }
+            | Self::Bge { .. }
+            | Self::Bltu { .. }
+            | Self::Bgeu { .. }
+            | Self::Jal { .. }
+            | Self::Jalr { .. }
+            | Self::Lui { .. }
+            | Self::Auipc { .. }
+            | Self::Addi { .. }
+            | Self::Slti { .. }
+            | Self::Sltiu { .. }
+            | Self::Andi { .. }
+            | Self::Ori { .. }
+            | Self::Xori { .. }
+            | Self::Slli { .. }
+            | Self::Srli { .. }
+            | Self::Srai { .. } => Some(Extension::I),
         }
     }
 }
@@ -136,9 +178,43 @@ macro_rules! impl_pretty_print {
 }
 
 impl_pretty_print!(Instruction {
-    Add, Sub, Sll, Slt, Sltu, Xor, Srl, Sra, Or, And, Addi, Slli,
-    Slti, Sltiu, Andi, Ori, Xori, Srli, Srai, Sb, Sw, Sh, Lb, Lh, Lw, Lbu,
-    Lhu, Beq, Bne, Blt, Bge, Bltu, Bgeu, Jal, Jalr, Lui, Auipc
+    Add,
+    Sub,
+    Sll,
+    Slt,
+    Sltu,
+    Xor,
+    Srl,
+    Sra,
+    Or,
+    And,
+    Addi,
+    Slli,
+    Slti,
+    Sltiu,
+    Andi,
+    Ori,
+    Xori,
+    Srli,
+    Srai,
+    Sb,
+    Sw,
+    Sh,
+    Lb,
+    Lh,
+    Lw,
+    Lbu,
+    Lhu,
+    Beq,
+    Bne,
+    Blt,
+    Bge,
+    Bltu,
+    Bgeu,
+    Jal,
+    Jalr,
+    Lui,
+    Auipc
 });
 
 #[derive(Debug)]
@@ -146,7 +222,7 @@ pub enum DecodeError {
     InvalidOpcode(u8),
     InvalidFunct3(u8),
     InvalidFunct7(u8),
-    InvalidSomething(u32)
+    InvalidSomething(u32),
 }
 
 impl TryFrom<u32> for Instruction {
@@ -210,45 +286,45 @@ impl TryFrom<u32> for Instruction {
                 _ => Err(DecodeError::InvalidFunct3(instr.funct3())),
             },
             OP_IMM => match instr.funct3() {
-                FUNCT3_ADDI => Ok(Instruction::Addi{
+                FUNCT3_ADDI => Ok(Instruction::Addi {
                     rd: instr.rd(),
                     rs1: instr.rs1(),
                     imm: instr.imm_addi(),
                 }),
-                FUNCT3_SLTIU => Ok(Instruction::Sltiu{
+                FUNCT3_SLTIU => Ok(Instruction::Sltiu {
                     rd: instr.rd(),
                     rs1: instr.rs1(),
                     imm: instr.imm_addi(),
                 }),
-                FUNCT3_SLTI => Ok(Instruction::Slti{
+                FUNCT3_SLTI => Ok(Instruction::Slti {
                     rd: instr.rd(),
                     rs1: instr.rs1(),
                     imm: instr.imm_addi(),
                 }),
-                FUNCT3_XORI => Ok(Instruction::Xori{
+                FUNCT3_XORI => Ok(Instruction::Xori {
                     rd: instr.rd(),
                     rs1: instr.rs1(),
                     imm: instr.imm_addi(),
                 }),
-                FUNCT3_ORI => Ok(Instruction::Ori{
+                FUNCT3_ORI => Ok(Instruction::Ori {
                     rd: instr.rd(),
                     rs1: instr.rs1(),
                     imm: instr.imm_addi(),
                 }),
-                FUNCT3_ANDI => Ok(Instruction::Andi{
+                FUNCT3_ANDI => Ok(Instruction::Andi {
                     rd: instr.rd(),
                     rs1: instr.rs1(),
                     imm: instr.imm_addi(),
                 }),
                 FUNCT3_SRLI => {
                     if (instr.imm_addi() & 0xFE0) >> 5 == 0 {
-                        Ok(Instruction::Srli{
+                        Ok(Instruction::Srli {
                             rd: instr.rd(),
                             rs1: instr.rs1(),
                             imm: instr.imm_addi(),
                         })
                     } else if (instr.imm_addi() & 0xFE0) >> 5 == 0x20 {
-                        Ok(Instruction::Srai{
+                        Ok(Instruction::Srai {
                             rd: instr.rd(),
                             rs1: instr.rs1(),
                             imm: instr.imm_addi(),
@@ -256,10 +332,10 @@ impl TryFrom<u32> for Instruction {
                     } else {
                         Err(DecodeError::InvalidSomething(instr.0))
                     }
-                },
+                }
                 FUNCT3_SLLI => {
                     if (instr.imm_addi() & 0xFE0) >> 5 == 0 {
-                        Ok(Instruction::Slli{
+                        Ok(Instruction::Slli {
                             rd: instr.rd(),
                             rs1: instr.rs1(),
                             imm: instr.imm_addi(),
@@ -267,9 +343,9 @@ impl TryFrom<u32> for Instruction {
                     } else {
                         Err(DecodeError::InvalidSomething(instr.0))
                     }
-                },
+                }
                 _ => Err(DecodeError::InvalidFunct3(instr.funct3())),
-            }
+            },
             OP_STORE => match instr.funct3() {
                 FUNCT3_SB => Ok(Instruction::Sb {
                     rs1: instr.rs1(),
@@ -356,33 +432,25 @@ impl TryFrom<u32> for Instruction {
                 }),
                 _ => Err(DecodeError::InvalidFunct3(instr.funct3())),
             },
-            OP_JAL => {
-                Ok(Instruction::Jal {
-                    rd: instr.rd(),
-                    rs1: instr.rs1(),
-                    imm: instr.imm_jal(),
-                })
-            },
-            OP_AUIPC => {
-                Ok(Instruction::Auipc {
-                    rd: instr.rd(),
-                    imm: instr.imm_lui_auipc(),
-                })
-            },
-            OP_LUI => {
-                Ok(Instruction::Lui {
-                    rd: instr.rd(),
-                    imm: instr.imm_lui_auipc(),
-                })
-
-            }
+            OP_JAL => Ok(Instruction::Jal {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_jal(),
+            }),
+            OP_AUIPC => Ok(Instruction::Auipc {
+                rd: instr.rd(),
+                imm: instr.imm_lui_auipc(),
+            }),
+            OP_LUI => Ok(Instruction::Lui {
+                rd: instr.rd(),
+                imm: instr.imm_lui_auipc(),
+            }),
             _ => Err(DecodeError::InvalidOpcode(instr.opcode())),
         }
     }
 }
 
 // CONSTANTS
-
 
 // OP_ALU
 
