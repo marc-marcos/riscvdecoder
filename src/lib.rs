@@ -23,6 +23,9 @@ impl RawInstruction {
     fn funct7(&self) -> u8 {
         ((self.0 >> 25) & 0x7F) as u8
     }
+    fn funct12(&self) -> u16 {
+        (self.0 >> 20) as u16
+    }
     fn imm_store(&self) -> u16 {
         ((((self.0 >> 7) & 0x1F | ((self.0 >> 25) & 0x7F) << 5) << 20) as i32 >> 20)
             .try_into()
@@ -65,8 +68,16 @@ impl RawInstruction {
     fn imm_addi(&self) -> u16 {
         ((self.0 >> 20) & 0xFFF) as u16
     }
+    fn fence_predecessor_successor(&self) -> (u8, u8) {
+        let pred = ((self.0 >> 24) & 0xF) as u8;
+
+        let succ = ((self.0 >> 20) & 0xF) as u8;
+
+        (pred, succ)
+    }
 }
 
+// macro_rules_attribute > macro_rules_derive
 #[derive(Debug)]
 pub enum Instruction {
     Add { rd: u8, rs1: u8, rs2: u8 },
@@ -112,6 +123,11 @@ pub enum Instruction {
 
     Lui { rd: u8, imm: u32 },
     Auipc { rd: u8, imm: u32 },
+
+    Ecall,
+    Ebreak,
+
+    Fence { pred: u8, succ: u8 },
 }
 
 #[derive(Debug)]
@@ -158,7 +174,10 @@ impl Instruction {
             | Self::Xori { .. }
             | Self::Slli { .. }
             | Self::Srli { .. }
-            | Self::Srai { .. } => Some(Extension::I),
+            | Self::Srai { .. }
+            | Self::Ebreak
+            | Self::Ecall
+            | Self::Fence { .. } => Some(Extension::I),
         }
     }
 }
@@ -214,7 +233,10 @@ impl_pretty_print!(Instruction {
     Jal,
     Jalr,
     Lui,
-    Auipc
+    Auipc,
+    Ecall,
+    Ebreak,
+    Fence,
 });
 
 #[derive(Debug)]
@@ -222,6 +244,7 @@ pub enum DecodeError {
     InvalidOpcode(u8),
     InvalidFunct3(u8),
     InvalidFunct7(u8),
+    InvalidFunct12(u16),
     InvalidSomething(u32),
 }
 
@@ -445,6 +468,18 @@ impl TryFrom<u32> for Instruction {
                 rd: instr.rd(),
                 imm: instr.imm_lui_auipc(),
             }),
+            OP_SYSTEM => match instr.funct12() {
+                FUNCT12_ECALL => Ok(Instruction::Ecall),
+                FUNCT12_EBREAK => Ok(Instruction::Ebreak),
+                _ => Err(DecodeError::InvalidFunct12(instr.funct12())),
+            },
+            OP_MISCMEM => match (instr.funct3(), instr.rs1(), instr.rd()) {
+                (FUNCT3_ADD, 0, 0) => Ok(Instruction::Fence {
+                    pred: instr.fence_predecessor_successor().0,
+                    succ: instr.fence_predecessor_successor().1,
+                }),
+                _ => Err(DecodeError::InvalidSomething(instr.0)),
+            },
             _ => Err(DecodeError::InvalidOpcode(instr.opcode())),
         }
     }
