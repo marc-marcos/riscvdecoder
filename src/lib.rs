@@ -353,7 +353,9 @@ impl TryFrom<u32> for Instruction {
                             imm: instr.imm_addi(),
                         })
                     } else {
-                        Err(DecodeError::InvalidSomething((instr.imm_addi() >> 6).into()))
+                        Err(DecodeError::InvalidSomething(
+                            (instr.imm_addi() >> 6).into(),
+                        ))
                     }
                 }
                 FUNCT3_SLLI => {
