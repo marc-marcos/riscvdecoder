@@ -340,24 +340,24 @@ impl TryFrom<u32> for Instruction {
                     imm: instr.imm_addi(),
                 }),
                 FUNCT3_SRLI => {
-                    if (instr.imm_addi() & 0xFE0) >> 5 == 0 {
+                    if instr.imm_addi() >> 6 == 0 {
                         Ok(Instruction::Srli {
                             rd: instr.rd(),
                             rs1: instr.rs1(),
                             imm: instr.imm_addi(),
                         })
-                    } else if (instr.imm_addi() & 0xFE0) >> 5 == 0x20 {
+                    } else if instr.imm_addi() >> 6 == 0x10 {
                         Ok(Instruction::Srai {
                             rd: instr.rd(),
                             rs1: instr.rs1(),
                             imm: instr.imm_addi(),
                         })
                     } else {
-                        Err(DecodeError::InvalidSomething(instr.0))
+                        Err(DecodeError::InvalidSomething((instr.imm_addi() >> 6).into()))
                     }
                 }
                 FUNCT3_SLLI => {
-                    if (instr.imm_addi() & 0xFE0) >> 5 == 0 {
+                    if (instr.imm_addi() & 0xFE0) >> 6 == 0 {
                         Ok(Instruction::Slli {
                             rd: instr.rd(),
                             rs1: instr.rs1(),
