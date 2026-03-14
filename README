@@ -4,8 +4,9 @@ Simple library to decode RISC-V instructions and find to which extension do they
 
 ## Roadmap
 
-- [ ] RV32I <- In progress
-- [ ] M
+- [X] RV32I 
+- [ ] M <- In progress
+- [ ] Use [riscv-opcodes](https://github.com/riscv/riscv-opcodes) as source of truth.
 - [ ] RV64I
 - [ ] A
 - [ ] F & D
