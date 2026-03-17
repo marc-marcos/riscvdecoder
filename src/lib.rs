@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 #[cfg(test)]
 mod tests;
 
@@ -26,10 +28,13 @@ impl RawInstruction {
     fn funct12(&self) -> u16 {
         (self.0 >> 20) as u16
     }
-    fn imm_store(&self) -> u16 {
-        ((((self.0 >> 7) & 0x1F | ((self.0 >> 25) & 0x7F) << 5) << 20) as i32 >> 20)
-            .try_into()
-            .unwrap()
+    fn imm_store(&self) -> i16 {
+        let imm_4_0 = (self.0 >> 7) & 0x1F;
+        let imm_11_5 = (self.0 >> 25) & 0x7F;
+
+        let imm_12 = imm_4_0 | (imm_11_5 << 5);
+
+        ((imm_12 << 4) as i16) >> 4
     }
     fn imm_load(&self) -> u16 {
         ((self.0 >> 20) & 0xFFF) as u16
@@ -101,9 +106,9 @@ pub enum Instruction {
     Srli { rd: u8, rs1: u8, imm: u16 },
     Srai { rd: u8, rs1: u8, imm: u16 },
 
-    Sb { rs1: u8, rs2: u8, imm: u16 },
-    Sh { rs1: u8, rs2: u8, imm: u16 },
-    Sw { rs1: u8, rs2: u8, imm: u16 },
+    Sb { rs1: u8, rs2: u8, imm: i16 },
+    Sh { rs1: u8, rs2: u8, imm: i16 },
+    Sw { rs1: u8, rs2: u8, imm: i16 },
 
     Lb { rd: u8, rs1: u8, imm: u16 },
     Lh { rd: u8, rs1: u8, imm: u16 },
@@ -128,11 +133,27 @@ pub enum Instruction {
     Ebreak,
 
     Fence { pred: u8, succ: u8 },
+
+    Mul { rd: u8, rs1: u8, rs2: u8 },
+    Mulh { rd: u8, rs1: u8, rs2: u8 },
+    Mulhu { rd: u8, rs1: u8, rs2: u8 },
+    Mulhsu { rd: u8, rs1: u8, rs2: u8 },
+    Mulw { rd: u8, rs1: u8, rs2: u8 },
+
+    Div { rd: u8, rs1: u8, rs2: u8 },
+    Divu { rd: u8, rs1: u8, rs2: u8 },
+    Rem { rd: u8, rs1: u8, rs2: u8 },
+    Remu { rd: u8, rs1: u8, rs2: u8 },
+    Divw { rd: u8, rs1: u8, rs2: u8 },
+    Divuw { rd: u8, rs1: u8, rs2: u8 },
+    Remw { rd: u8, rs1: u8, rs2: u8 },
+    Remuw { rd: u8, rs1: u8, rs2: u8 },
 }
 
-#[derive(Debug)]
+#[derive(Debug, Hash, Eq, PartialEq)]
 pub enum Extension {
     I,
+    M,
 }
 
 impl Instruction {
@@ -178,6 +199,19 @@ impl Instruction {
             | Self::Ebreak
             | Self::Ecall
             | Self::Fence { .. } => Some(Extension::I),
+            Self::Mul { .. }
+            | Self::Mulw { .. }
+            | Self::Mulh { .. }
+            | Self::Mulhu { .. }
+            | Self::Mulhsu { .. }
+            | Self::Div { .. }
+            | Self::Divu { .. }
+            | Self::Rem { .. }
+            | Self::Remu { .. }
+            | Self::Divw { .. }
+            | Self::Divuw { .. }
+            | Self::Remw { .. }
+            | Self::Remuw { .. } => Some(Extension::M),
         }
     }
 }
@@ -237,7 +271,22 @@ impl_pretty_print!(Instruction {
     Ecall,
     Ebreak,
     Fence,
+    Mul,
+    Mulw,
+    Mulh,
+    Mulhu,
+    Mulhsu,
+    Div,
+    Divu,
+    Rem,
+    Remu,
+    Divw,
+    Divuw,
+    Remw,
+    Remuw,
 });
+
+impl_pretty_print!(Extension { I, M });
 
 #[derive(Debug)]
 pub enum DecodeError {
@@ -302,6 +351,74 @@ impl TryFrom<u32> for Instruction {
                     rs2: instr.rs2(),
                 }),
                 (FUNCT3_AND, FUNCT7_AND) => Ok(Instruction::And {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_MUL, FUNCT7_MULDIV) => Ok(Instruction::Mul {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_MULH, FUNCT7_MULDIV) => Ok(Instruction::Mulh {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_MULHU, FUNCT7_MULDIV) => Ok(Instruction::Mulhu {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_MULHSU, FUNCT7_MULDIV) => Ok(Instruction::Mulhsu {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_DIV, FUNCT7_MULDIV) => Ok(Instruction::Div {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_DIVU, FUNCT7_MULDIV) => Ok(Instruction::Divu {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_REM, FUNCT7_MULDIV) => Ok(Instruction::Rem {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_REMU, FUNCT7_MULDIV) => Ok(Instruction::Remu {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                _ => Err(DecodeError::InvalidFunct3(instr.funct3())),
+            },
+            OP_OP32 => match (instr.funct3(), instr.funct7()) {
+                (FUNCT3_MUL, FUNCT7_MULDIV) => Ok(Instruction::Mulw {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_DIV, FUNCT7_MULDIV) => Ok(Instruction::Divw {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_DIVU, FUNCT7_MULDIV) => Ok(Instruction::Divuw {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_REM, FUNCT7_MULDIV) => Ok(Instruction::Remw {
+                    rd: instr.rd(),
+                    rs1: instr.rs1(),
+                    rs2: instr.rs2(),
+                }),
+                (FUNCT3_REMU, FUNCT7_MULDIV) => Ok(Instruction::Remuw {
                     rd: instr.rd(),
                     rs1: instr.rs1(),
                     rs2: instr.rs2(),
@@ -492,6 +609,7 @@ impl TryFrom<u32> for Instruction {
 // OP_ALU
 
 pub const OP_ALU: u8 = 0b0110011;
+pub const OP_OP32: u8 = 0b0111011;
 
 pub const FUNCT3_ADD: u8 = 0b000;
 pub const FUNCT7_ADD: u8 = 0b0000000;
@@ -606,3 +724,38 @@ pub const OP_SYSTEM: u8 = 0b1110011;
 
 pub const FUNCT12_ECALL: u16 = 0b000000000000;
 pub const FUNCT12_EBREAK: u16 = 0b000000000001;
+
+// MULDIV
+
+pub const FUNCT7_MULDIV: u8 = 0b0000001;
+
+pub const FUNCT3_MUL: u8 = 0b000;
+pub const FUNCT3_MULH: u8 = 0b001;
+pub const FUNCT3_MULHU: u8 = 0b011;
+pub const FUNCT3_MULHSU: u8 = 0b010;
+
+pub const FUNCT3_DIV: u8 = 0b100;
+pub const FUNCT3_DIVU: u8 = 0b101;
+pub const FUNCT3_REM: u8 = 0b110;
+pub const FUNCT3_REMU: u8 = 0b111;
+
+#[derive(Debug)]
+enum Errors {
+    IllegalInstruction,
+}
+
+pub fn get_vec_instructions(raw: Vec<u32>) -> Vec<Instruction> {
+    raw.into_iter()
+        .filter_map(|elem| elem.try_into().ok())
+        .collect()
+}
+
+pub fn get_extensions_from_instructions(raw: Vec<Instruction>) -> HashSet<Extension> {
+    let mut out = HashSet::new();
+
+    for instr in raw {
+        out.insert(instr.extension().expect("Extensions invalid."));
+    }
+
+    out
+}

@@ -1,482 +1,74 @@
 use super::*;
 
-#[test]
-fn test_add() {
-    let raw: u32 = 0x00c982b3;
+macro_rules! test_instruction {
+    ($test_name:ident, $raw_hex:expr, $variant:ident) => {
+        #[test]
+        fn $test_name() {
+            let raw: u32 = $raw_hex;
+            let instr = Instruction::try_from(raw);
 
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Add { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Add), got {:?}", instr);
-    }
+            // We use the "matches!" macro or "if let" to check the variant
+            if !matches!(instr, Ok(Instruction::$variant { .. })) {
+                panic!(
+                    "Expected Ok(Instruction::{}), but got {:?}",
+                    stringify!($variant),
+                    instr
+                );
+            }
+        }
+    };
 }
 
-#[test]
-fn test_sub() {
-    let raw: u32 = 0x41268333;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Sub { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Sub), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_sll() {
-    let raw: u32 = 0x009396b3;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Sll { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Sll), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_slt() {
-    let raw: u32 = 0x00b82eb3;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Slt { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Slt), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_sltu() {
-    let raw: u32 = 0x005c3433;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Sltu { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Sltu), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_xor() {
-    let raw: u32 = 0x0156ce33;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Xor { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Xor), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_srl() {
-    let raw: u32 = 0x01cb55b3;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Srl { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Srl), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_sra() {
-    let raw: u32 = 0x41cb55b3;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Sra { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Sra), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_or() {
-    let raw: u32 = 0x01e6e4b3;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Or { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Or), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_and() {
-    let raw: u32 = 0x0069f7b3;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::And { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Sltu), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_addi() {
-    let raw: u32 = 0x00098793;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Addi { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Addi), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_slli() {
-    let raw: u32 = 0x00c69493;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Slli { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Slli), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_slti() {
-    let raw: u32 = 0x00a9a793;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Slti { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Slti), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_sltiu() {
-    let raw: u32 = 0x00fc3e13;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Sltiu { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Sltiu), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_andi() {
-    let raw: u32 = 0x00c69493;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Slli { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Slli), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_ori() {
-    let raw: u32 = 0x07b2e493;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Ori { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Ori), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_xori() {
-    let raw: u32 = 0x00004393;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Xori { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Xori), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_srli() {
-    let raw: u32 = 0x02b95293;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Srli { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Srli), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_srai() {
-    let raw: u32 = 0x42b95293;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Srai { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Srai), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_sb() {
-    let raw: u32 = 0x00960c23;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Sb { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Sb), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_sw() {
-    let raw: u32 = 0x00962c23;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Sw { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Sw), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_sh() {
-    let raw: u32 = 0x00961c23;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Sh { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Sh), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_lb() {
-    let raw: u32 = 0x01860483;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Lb { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Lb), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_lh() {
-    let raw: u32 = 0x01861483;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Lh { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Lh), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_lw() {
-    let raw: u32 = 0x01862483;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Lw { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Lw), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_lbu() {
-    let raw: u32 = 0x01864483;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Lbu { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Lbu), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_lhu() {
-    let raw: u32 = 0x01865483;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Lhu { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Lhu), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_beq() {
-    let raw: u32 = 0x07328d63;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Beq { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Beq), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_bne() {
-    let raw: u32 = 0x07329d63;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Bne { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Bne), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_blt() {
-    let raw: u32 = 0x0732cd63;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Blt { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Blt), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_bge() {
-    let raw: u32 = 0x0732dd63;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Bge { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Bge), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_bltu() {
-    let raw: u32 = 0x0732ed63;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Bltu { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Bltu), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_bgeu() {
-    let raw: u32 = 0x0732fd63;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Bgeu { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Bgeu), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_jal() {
-    let raw: u32 = 0x1d3009ef;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Jal { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Jal), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_jalr() {
-    let raw: u32 = 0x0f3289e7;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Jalr { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Jalr), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_lui() {
-    let raw: u32 = 0x00dc14b7;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Lui { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Lui), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_auipc() {
-    let raw: u32 = 0x4c4e2997;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Auipc { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Auipc), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_ecall() {
-    let raw: u32 = 0x00000073;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Ecall { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Ecall), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_ebreak() {
-    let raw: u32 = 0x00100073;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Ebreak { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Ebreak), got {:?}", instr);
-    }
-}
-
-#[test]
-fn test_fence() {
-    let raw: u32 = 0x0a50000f;
-    let instr: Result<Instruction, DecodeError> = Instruction::try_from(raw);
-
-    if let Ok(Instruction::Fence { .. }) = instr {
-        assert_eq!(1, 1);
-    } else {
-        panic!("Expected Ok(Instruction::Fence), got {:?}", instr);
-    }
-}
+test_instruction!(test_add, 0x00c982b3, Add);
+test_instruction!(test_sub, 0x41268333, Sub);
+test_instruction!(test_sll, 0x009396b3, Sll);
+test_instruction!(test_slt, 0x00b82eb3, Slt);
+test_instruction!(test_sltu, 0x005c3433, Sltu);
+test_instruction!(test_xor, 0x0156ce33, Xor);
+test_instruction!(test_srl, 0x01cb55b3, Srl);
+test_instruction!(test_sra, 0x41cb55b3, Sra);
+test_instruction!(test_or, 0x01e6e4b3, Or);
+test_instruction!(test_and, 0x0069f7b3, And);
+test_instruction!(test_addi, 0x00098793, Addi);
+test_instruction!(test_slli, 0x00c69493, Slli);
+test_instruction!(test_slti, 0x00a9a793, Slti);
+test_instruction!(test_sltiu, 0x00fc3e13, Sltiu);
+test_instruction!(test_andi, 0x00c69493, Slli);
+test_instruction!(test_ori, 0x07b2e493, Ori);
+test_instruction!(test_xori, 0x00004393, Xori);
+test_instruction!(test_srli, 0x02b95293, Srli);
+test_instruction!(test_srai, 0x42b95293, Srai);
+test_instruction!(test_sb, 0x00960c23, Sb);
+test_instruction!(test_sw, 0x00962c23, Sw);
+test_instruction!(test_sh, 0x00961c23, Sh);
+test_instruction!(test_lb, 0x01860483, Lb);
+test_instruction!(test_lh, 0x01861483, Lh);
+test_instruction!(test_lw, 0x01862483, Lw);
+test_instruction!(test_lbu, 0x01864483, Lbu);
+test_instruction!(test_lhu, 0x01865483, Lhu);
+test_instruction!(test_beq, 0x07328d63, Beq);
+test_instruction!(test_bne, 0x07329d63, Bne);
+test_instruction!(test_blt, 0x0732cd63, Blt);
+test_instruction!(test_bge, 0x0732dd63, Bge);
+test_instruction!(test_bltu, 0x0732ed63, Bltu);
+test_instruction!(test_bgeu, 0x0732fd63, Bgeu);
+test_instruction!(test_jal, 0x1d3009ef, Jal);
+test_instruction!(test_jalr, 0x0f3289e7, Jalr);
+test_instruction!(test_lui, 0x00dc14b7, Lui);
+test_instruction!(test_auipc, 0x4c4e2997, Auipc);
+test_instruction!(test_ecall, 0x00000073, Ecall);
+test_instruction!(test_ebreak, 0x00100073, Ebreak);
+test_instruction!(test_fence, 0x0a50000f, Fence);
+test_instruction!(test_mul, 0x026684b3, Mul);
+test_instruction!(test_mulh, 0x029f97b3, Mulh);
+test_instruction!(test_mulhu, 0x02b93eb3, Mulhu);
+test_instruction!(test_mulhsu, 0x03e926b3, Mulhsu);
+test_instruction!(test_mulw, 0x02d482bb, Mulw);
+test_instruction!(test_div, 0x02b4c2b3, Div);
+test_instruction!(test_divu, 0x02be52b3, Divu);
+test_instruction!(test_rem, 0x036ee4b3, Rem);
+test_instruction!(test_remu, 0x027f7333, Remu);
+test_instruction!(test_divw, 0x0376c33b, Divw);
+test_instruction!(test_divuw, 0x0353d5bb, Divuw);
+test_instruction!(test_remw, 0x031962bb, Remw);
+test_instruction!(test_remuw, 0x032bf4bb, Remuw);
