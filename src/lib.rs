@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 #[cfg(test)]
 mod tests;
 
@@ -26,10 +28,13 @@ impl RawInstruction {
     fn funct12(&self) -> u16 {
         (self.0 >> 20) as u16
     }
-    fn imm_store(&self) -> u16 {
-        ((((self.0 >> 7) & 0x1F | ((self.0 >> 25) & 0x7F) << 5) << 20) as i32 >> 20)
-            .try_into()
-            .unwrap()
+    fn imm_store(&self) -> i16 {
+        let imm_4_0 = (self.0 >> 7) & 0x1F;
+        let imm_11_5 = (self.0 >> 25) & 0x7F;
+
+        let imm_12 = imm_4_0 | (imm_11_5 << 5);
+
+        ((imm_12 << 4) as i16) >> 4
     }
     fn imm_load(&self) -> u16 {
         ((self.0 >> 20) & 0xFFF) as u16
@@ -101,9 +106,9 @@ pub enum Instruction {
     Srli { rd: u8, rs1: u8, imm: u16 },
     Srai { rd: u8, rs1: u8, imm: u16 },
 
-    Sb { rs1: u8, rs2: u8, imm: u16 },
-    Sh { rs1: u8, rs2: u8, imm: u16 },
-    Sw { rs1: u8, rs2: u8, imm: u16 },
+    Sb { rs1: u8, rs2: u8, imm: i16 },
+    Sh { rs1: u8, rs2: u8, imm: i16 },
+    Sw { rs1: u8, rs2: u8, imm: i16 },
 
     Lb { rd: u8, rs1: u8, imm: u16 },
     Lh { rd: u8, rs1: u8, imm: u16 },
@@ -145,7 +150,7 @@ pub enum Instruction {
     Remuw { rd: u8, rs1: u8, rs2: u8 },
 }
 
-#[derive(Debug)]
+#[derive(Debug, Hash, Eq, PartialEq)]
 pub enum Extension {
     I,
     M,
@@ -280,6 +285,8 @@ impl_pretty_print!(Instruction {
     Remw,
     Remuw,
 });
+
+impl_pretty_print!(Extension { I, M });
 
 #[derive(Debug)]
 pub enum DecodeError {
@@ -731,3 +738,24 @@ pub const FUNCT3_DIV: u8 = 0b100;
 pub const FUNCT3_DIVU: u8 = 0b101;
 pub const FUNCT3_REM: u8 = 0b110;
 pub const FUNCT3_REMU: u8 = 0b111;
+
+#[derive(Debug)]
+enum Errors {
+    IllegalInstruction,
+}
+
+pub fn get_vec_instructions(raw: Vec<u32>) -> Vec<Instruction> {
+    raw.into_iter()
+        .filter_map(|elem| elem.try_into().ok())
+        .collect()
+}
+
+pub fn get_extensions_from_instructions(raw: Vec<Instruction>) -> HashSet<Extension> {
+    let mut out = HashSet::new();
+
+    for instr in raw {
+        out.insert(instr.extension().expect("Extensions invalid."));
+    }
+
+    out
+}
