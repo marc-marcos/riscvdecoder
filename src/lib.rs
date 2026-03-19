@@ -1,5 +1,9 @@
 use std::collections::HashSet;
 
+pub mod opcodes {
+    include!(concat!(env!("OUT_DIR"), "/opcodes.rs"));
+}
+
 #[cfg(test)]
 mod tests;
 
@@ -303,6 +307,7 @@ impl TryFrom<u32> for Instruction {
     fn try_from(raw: u32) -> Result<Self, Self::Error> {
         let instr = RawInstruction(raw);
 
+        /*
         match instr.opcode() {
             OP_ALU => match (instr.funct3(), instr.funct7()) {
                 (FUNCT3_ADD, FUNCT7_ADD) => Ok(Instruction::Add {
@@ -601,143 +606,318 @@ impl TryFrom<u32> for Instruction {
             },
             _ => Err(DecodeError::InvalidOpcode(instr.opcode())),
         }
+        */
+        if (raw & opcodes::MASK_ADD) == opcodes::MATCH_ADD {
+            return Ok(Instruction::Add {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_SUB) == opcodes::MATCH_SUB {
+            return Ok(Instruction::Sub {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_SLL) == opcodes::MATCH_SLL {
+            return Ok(Instruction::Sll {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_SLT) == opcodes::MATCH_SLT {
+            return Ok(Instruction::Slt {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_SLTU) == opcodes::MATCH_SLTU {
+            return Ok(Instruction::Sltu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_XOR) == opcodes::MATCH_XOR {
+            return Ok(Instruction::Xor {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_SRL) == opcodes::MATCH_SRL {
+            return Ok(Instruction::Srl {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_SRA) == opcodes::MATCH_SRA {
+            return Ok(Instruction::Sra {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_OR) == opcodes::MATCH_OR {
+            return Ok(Instruction::Or {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AND) == opcodes::MATCH_AND {
+            return Ok(Instruction::And {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_ADDI) == opcodes::MATCH_ADDI {
+            return Ok(Instruction::Addi {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_SLLI) == opcodes::MATCH_SLLI {
+            return Ok(Instruction::Slli {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_SLTI) == opcodes::MATCH_SLTI {
+            return Ok(Instruction::Slti {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_SLTIU) == opcodes::MATCH_SLTIU {
+            return Ok(Instruction::Sltiu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_SLLI) == opcodes::MATCH_SLLI {
+            return Ok(Instruction::Slli {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_ORI) == opcodes::MATCH_ORI {
+            return Ok(Instruction::Ori {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_XORI) == opcodes::MATCH_XORI {
+            return Ok(Instruction::Xori {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_SRLI) == opcodes::MATCH_SRLI {
+            return Ok(Instruction::Srli {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_SRAI) == opcodes::MATCH_SRAI {
+            return Ok(Instruction::Srai {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_SB) == opcodes::MATCH_SB {
+            return Ok(Instruction::Sb {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_store(),
+            });
+        } else if (raw & opcodes::MASK_SW) == opcodes::MATCH_SW {
+            return Ok(Instruction::Sw {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_store(),
+            });
+        } else if (raw & opcodes::MASK_SH) == opcodes::MATCH_SH {
+            return Ok(Instruction::Sh {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_store(),
+            });
+        } else if (raw & opcodes::MASK_LB) == opcodes::MATCH_LB {
+            return Ok(Instruction::Lb {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_load(),
+            });
+        } else if (raw & opcodes::MASK_LW) == opcodes::MATCH_LW {
+            return Ok(Instruction::Lw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_load(),
+            });
+        } else if (raw & opcodes::MASK_LH) == opcodes::MATCH_LH {
+            return Ok(Instruction::Lh {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_load(),
+            });
+        } else if (raw & opcodes::MASK_LBU) == opcodes::MATCH_LBU {
+            return Ok(Instruction::Lbu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_load(),
+            });
+        } else if (raw & opcodes::MASK_LHU) == opcodes::MATCH_LHU {
+            return Ok(Instruction::Lhu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_load(),
+            });
+        } else if (raw & opcodes::MASK_BEQ) == opcodes::MATCH_BEQ {
+            return Ok(Instruction::Beq {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_branch(),
+            });
+        } else if (raw & opcodes::MASK_BNE) == opcodes::MATCH_BNE {
+            return Ok(Instruction::Bne {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_branch(),
+            });
+        } else if (raw & opcodes::MASK_BLT) == opcodes::MATCH_BLT {
+            return Ok(Instruction::Blt {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_branch(),
+            });
+        } else if (raw & opcodes::MASK_BGE) == opcodes::MATCH_BGE {
+            return Ok(Instruction::Bge {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_branch(),
+            });
+        } else if (raw & opcodes::MASK_BLTU) == opcodes::MATCH_BLTU {
+            return Ok(Instruction::Bltu {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_branch(),
+            });
+        } else if (raw & opcodes::MASK_BGEU) == opcodes::MATCH_BGEU {
+            return Ok(Instruction::Bgeu {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_branch(),
+            });
+        } else if (raw & opcodes::MASK_JAL) == opcodes::MATCH_JAL {
+            return Ok(Instruction::Jal {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_jal(),
+            });
+        } else if (raw & opcodes::MASK_JALR) == opcodes::MATCH_JALR {
+            return Ok(Instruction::Jalr {
+                rd: instr.rd(),
+                imm: instr.imm_jalr(),
+            });
+        } else if (raw & opcodes::MASK_LUI) == opcodes::MATCH_LUI {
+            return Ok(Instruction::Lui {
+                rd: instr.rd(),
+                imm: instr.imm_lui_auipc(),
+            });
+        } else if (raw & opcodes::MASK_AUIPC) == opcodes::MATCH_AUIPC {
+            return Ok(Instruction::Auipc {
+                rd: instr.rd(),
+                imm: instr.imm_lui_auipc(),
+            });
+        } else if (raw & opcodes::MASK_ECALL) == opcodes::MATCH_ECALL {
+            return Ok(Instruction::Ecall);
+        } else if (raw & opcodes::MASK_EBREAK) == opcodes::MATCH_EBREAK {
+            return Ok(Instruction::Ebreak);
+        } else if (raw & opcodes::MASK_FENCE) == opcodes::MATCH_FENCE {
+            return Ok(Instruction::Fence {
+                pred: instr.fence_predecessor_successor().0,
+                succ: instr.fence_predecessor_successor().1,
+            });
+        } else if (raw & opcodes::MASK_MUL) == opcodes::MATCH_MUL {
+            return Ok(Instruction::Mul {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_MULH) == opcodes::MATCH_MULH {
+            return Ok(Instruction::Mulh {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_MULHU) == opcodes::MATCH_MULHU {
+            return Ok(Instruction::Mulhu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_MULHSU) == opcodes::MATCH_MULHSU {
+            return Ok(Instruction::Mulhsu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_MULW) == opcodes::MATCH_MULW {
+            return Ok(Instruction::Mulw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_DIV) == opcodes::MATCH_DIV {
+            return Ok(Instruction::Div {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_DIVU) == opcodes::MATCH_DIVU {
+            return Ok(Instruction::Divu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_REM) == opcodes::MATCH_REM {
+            return Ok(Instruction::Rem {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_REMU) == opcodes::MATCH_REMU {
+            return Ok(Instruction::Remu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_DIVW) == opcodes::MATCH_DIVW {
+            return Ok(Instruction::Divw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_DIVUW) == opcodes::MATCH_DIVUW {
+            return Ok(Instruction::Divuw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_REMW) == opcodes::MATCH_REMW {
+            return Ok(Instruction::Remw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_REMUW) == opcodes::MATCH_REMUW {
+            return Ok(Instruction::Remuw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        }
+
+        Err(DecodeError::InvalidSomething(raw))
     }
 }
-
-// CONSTANTS
-
-// OP_ALU
-
-pub const OP_ALU: u8 = 0b0110011;
-pub const OP_OP32: u8 = 0b0111011;
-
-pub const FUNCT3_ADD: u8 = 0b000;
-pub const FUNCT7_ADD: u8 = 0b0000000;
-
-pub const FUNCT3_SUB: u8 = 0b000;
-pub const FUNCT7_SUB: u8 = 0b0100000;
-
-pub const FUNCT3_SLL: u8 = 0b001;
-pub const FUNCT7_SLL: u8 = 0b0000000;
-
-pub const FUNCT3_SLT: u8 = 0b010;
-pub const FUNCT7_SLT: u8 = 0b0000000;
-
-pub const FUNCT3_SLTU: u8 = 0b011;
-pub const FUNCT7_SLTU: u8 = 0b0000000;
-
-pub const FUNCT3_XOR: u8 = 0b100;
-pub const FUNCT7_XOR: u8 = 0b0000000;
-
-pub const FUNCT3_SRL: u8 = 0b101;
-pub const FUNCT7_SRL: u8 = 0b0000000;
-
-pub const FUNCT3_SRA: u8 = 0b101;
-pub const FUNCT7_SRA: u8 = 0b0100000;
-
-pub const FUNCT3_OR: u8 = 0b110;
-pub const FUNCT7_OR: u8 = 0b0000000;
-
-pub const FUNCT3_AND: u8 = 0b111;
-pub const FUNCT7_AND: u8 = 0b0000000;
-
-// OP_STORE
-
-pub const OP_STORE: u8 = 0b0100011;
-
-pub const FUNCT3_SB: u8 = 0b000;
-pub const FUNCT3_SH: u8 = 0b001;
-pub const FUNCT3_SW: u8 = 0b010;
-
-// OP_IMM
-
-pub const OP_IMM: u8 = 0b0010011;
-
-pub const FUNCT3_ADDI: u8 = 0b000;
-
-pub const FUNCT3_SLLI: u8 = 0b001;
-pub const FUNCT7_SLLI: u8 = 0b0000000;
-
-pub const FUNCT3_SLTI: u8 = 0b010;
-
-pub const FUNCT3_SLTIU: u8 = 0b011;
-
-pub const FUNCT3_XORI: u8 = 0b100;
-
-pub const FUNCT3_SRLI: u8 = 0b101;
-pub const FUNCT7_SRLI: u8 = 0b0000000;
-
-pub const FUNCT3_SRAI: u8 = 0b101;
-pub const FUNCT7_SRAI: u8 = 0b0100000;
-
-pub const FUNCT3_ORI: u8 = 0b110;
-
-pub const FUNCT3_ANDI: u8 = 0b111;
-
-// OP_LOAD
-
-pub const OP_LOAD: u8 = 0b0000011;
-
-pub const FUNCT3_LB: u8 = 0b000;
-pub const FUNCT3_LH: u8 = 0b001;
-pub const FUNCT3_LW: u8 = 0b010;
-
-pub const FUNCT3_LBU: u8 = 0b100;
-pub const FUNCT3_LHU: u8 = 0b101;
-
-// OP_BRANCH
-
-pub const OP_BRANCH: u8 = 0b1100011;
-
-pub const FUNCT3_BEQ: u8 = 0b000;
-pub const FUNCT3_BNE: u8 = 0b001;
-pub const FUNCT3_BLT: u8 = 0b100;
-pub const FUNCT3_BGE: u8 = 0b101;
-pub const FUNCT3_BLTU: u8 = 0b110;
-pub const FUNCT3_BGEU: u8 = 0b111;
-
-// OP_JALR
-
-pub const OP_JALR: u8 = 0b1100111;
-
-pub const FUNCT3_JALR: u8 = 0b000;
-
-// OP_JAL
-
-pub const OP_JAL: u8 = 0b1101111;
-
-// OP_AUIPC
-
-pub const OP_AUIPC: u8 = 0b0010111;
-
-// OP_LUI
-
-pub const OP_LUI: u8 = 0b0110111;
-
-// OP_FENCE
-
-pub const OP_MISCMEM: u8 = 0b0001111;
-
-// OP_SYSTEM
-
-pub const OP_SYSTEM: u8 = 0b1110011;
-
-pub const FUNCT12_ECALL: u16 = 0b000000000000;
-pub const FUNCT12_EBREAK: u16 = 0b000000000001;
-
-// MULDIV
-
-pub const FUNCT7_MULDIV: u8 = 0b0000001;
-
-pub const FUNCT3_MUL: u8 = 0b000;
-pub const FUNCT3_MULH: u8 = 0b001;
-pub const FUNCT3_MULHU: u8 = 0b011;
-pub const FUNCT3_MULHSU: u8 = 0b010;
-
-pub const FUNCT3_DIV: u8 = 0b100;
-pub const FUNCT3_DIVU: u8 = 0b101;
-pub const FUNCT3_REM: u8 = 0b110;
-pub const FUNCT3_REMU: u8 = 0b111;
 
 #[derive(Debug)]
 enum Errors {
