@@ -379,12 +379,6 @@ impl TryFrom<u32> for Instruction {
                 rs1: instr.rs1(),
                 imm: instr.imm_addi(),
             });
-        } else if (raw & opcodes::MASK_SLLI) == opcodes::MATCH_SLLI {
-            return Ok(Instruction::Slli {
-                rd: instr.rd(),
-                rs1: instr.rs1(),
-                imm: instr.imm_addi(),
-            });
         } else if (raw & opcodes::MASK_ORI) == opcodes::MATCH_ORI {
             return Ok(Instruction::Ori {
                 rd: instr.rd(),
