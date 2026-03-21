@@ -7,7 +7,7 @@ Simple library to decode RISC-V instructions and find to which extension do they
 - [X] RV32I 
 - [X] M
 - [X] Use [riscv-opcodes](https://github.com/riscv/riscv-opcodes) as source of truth.
-- [ ] RV64I
-- [ ] A
+- [X] RV64I
+- [ ] A <- In progress
 - [ ] F & D
 - [ ] Zicsr & Zifencei
