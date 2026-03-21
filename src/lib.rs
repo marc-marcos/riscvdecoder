@@ -126,6 +126,21 @@ pub enum Instruction {
 
     Fence { pred: u8, succ: u8 },
 
+    Ld { rd: u8, rs1: u8, imm: u16 },
+    Sd { rs1: u8, rs2: u8, imm: i16 },
+    Lwu { rd: u8, rs1: u8, imm: u16 },
+
+    Addw { rd: u8, rs1: u8, rs2: u8 },
+    Addiw { rd: u8, rs1: u8, imm: u16 },
+    Subw { rd: u8, rs1: u8, rs2: u8 },
+
+    Sllw { rd: u8, rs1: u8, rs2: u8 },
+    Slliw { rd: u8, rs1: u8, imm: u16 },
+    Srlw { rd: u8, rs1: u8, rs2: u8 },
+    Srliw { rd: u8, rs1: u8, imm: u16 },
+    Sraw { rd: u8, rs1: u8, rs2: u8 },
+    Sraiw { rd: u8, rs1: u8, imm: u16 },
+
     Mul { rd: u8, rs1: u8, rs2: u8 },
     Mulh { rd: u8, rs1: u8, rs2: u8 },
     Mulhu { rd: u8, rs1: u8, rs2: u8 },
@@ -190,7 +205,19 @@ impl Instruction {
             | Self::Srai { .. }
             | Self::Ebreak
             | Self::Ecall
-            | Self::Fence { .. } => Some(Extension::I),
+            | Self::Fence { .. }
+            | Self::Ld { .. }
+            | Self::Sd { .. }
+            | Self::Lwu { .. }
+            | Self::Addw { .. }
+            | Self::Addiw { .. }
+            | Self::Subw { .. }
+            | Self::Sllw { .. }
+            | Self::Slliw { .. }
+            | Self::Srlw { .. }
+            | Self::Srliw { .. }
+            | Self::Sraw { .. }
+            | Self::Sraiw { .. } => Some(Extension::I),
             Self::Mul { .. }
             | Self::Mulw { .. }
             | Self::Mulh { .. }
@@ -276,6 +303,18 @@ impl_pretty_print!(Instruction {
     Divuw,
     Remw,
     Remuw,
+    Ld,
+    Sd,
+    Lwu,
+    Addw,
+    Addiw,
+    Subw,
+    Sllw,
+    Slliw,
+    Srlw,
+    Srliw,
+    Sraw,
+    Sraiw
 });
 
 impl_pretty_print!(Extension { I, M });
@@ -516,6 +555,78 @@ impl TryFrom<u32> for Instruction {
             return Ok(Instruction::Fence {
                 pred: instr.fence_predecessor_successor().0,
                 succ: instr.fence_predecessor_successor().1,
+            });
+        } else if (raw & opcodes::MASK_LD) == opcodes::MATCH_LD {
+            return Ok(Instruction::Ld {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_load(),
+            });
+        } else if (raw & opcodes::MASK_SD) == opcodes::MATCH_SD {
+            return Ok(Instruction::Sd {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_store(),
+            });
+        } else if (raw & opcodes::MASK_LWU) == opcodes::MATCH_LWU {
+            return Ok(Instruction::Lwu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_load(),
+            });
+        } else if (raw & opcodes::MASK_ADDW) == opcodes::MATCH_ADDW {
+            return Ok(Instruction::Addw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_ADDIW) == opcodes::MATCH_ADDIW {
+            return Ok(Instruction::Addiw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_SUBW) == opcodes::MATCH_SUBW {
+            return Ok(Instruction::Subw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_SLLW) == opcodes::MATCH_SLLW {
+            return Ok(Instruction::Sllw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_SLLIW) == opcodes::MATCH_SLLIW {
+            return Ok(Instruction::Slliw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_SRLW) == opcodes::MATCH_SRLW {
+            return Ok(Instruction::Srlw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_SRLIW) == opcodes::MATCH_SRLIW {
+            return Ok(Instruction::Srliw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
+            });
+        } else if (raw & opcodes::MASK_SRAW) == opcodes::MATCH_SRAW {
+            return Ok(Instruction::Sraw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_SRAIW) == opcodes::MATCH_SRAIW {
+            return Ok(Instruction::Sraiw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_addi(),
             });
         } else if (raw & opcodes::MASK_MUL) == opcodes::MATCH_MUL {
             return Ok(Instruction::Mul {
