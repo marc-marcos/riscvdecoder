@@ -9,7 +9,7 @@ fn main() {
     let submodule_path = PathBuf::from(&manifest_dir).join("external/riscv-opcodes");
 
     let status = Command::new("make")
-        .arg("EXTENSIONS=rv_i rv_m rv32_i rv32_m rv64_i rv64_m")
+        .arg("EXTENSIONS=rv_i rv_m rv32_i rv32_m rv64_i rv64_m rv32_a rv64_a rv_a")
         .arg("inst.rs")
         .current_dir(&submodule_path)
         .status()

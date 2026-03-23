@@ -155,12 +155,37 @@ pub enum Instruction {
     Divuw { rd: u8, rs1: u8, rs2: u8 },
     Remw { rd: u8, rs1: u8, rs2: u8 },
     Remuw { rd: u8, rs1: u8, rs2: u8 },
+
+    Lrw { rd: u8, rs1: u8, imm: u16 },
+    Lrd { rd: u8, rs1: u8, imm: u16 },
+    Scw { rs1: u8, rs2: u8, imm: i16 },
+    Scd { rs1: u8, rs2: u8, imm: i16 },
+
+    Amoswapw { rd: u8, rs1: u8, rs2: u8 },
+    Amoswapd { rd: u8, rs1: u8, rs2: u8 },
+    Amoaddw { rd: u8, rs1: u8, rs2: u8 },
+    Amoaddd { rd: u8, rs1: u8, rs2: u8 },
+    Amoandw { rd: u8, rs1: u8, rs2: u8 },
+    Amoandd { rd: u8, rs1: u8, rs2: u8 },
+    Amoorw { rd: u8, rs1: u8, rs2: u8 },
+    Amoord { rd: u8, rs1: u8, rs2: u8 },
+    Amoxorw { rd: u8, rs1: u8, rs2: u8 },
+    Amoxord { rd: u8, rs1: u8, rs2: u8 },
+    Amomaxw { rd: u8, rs1: u8, rs2: u8 },
+    Amomaxd { rd: u8, rs1: u8, rs2: u8 },
+    Amomaxuw { rd: u8, rs1: u8, rs2: u8 },
+    Amomaxud { rd: u8, rs1: u8, rs2: u8 },
+    Amominw { rd: u8, rs1: u8, rs2: u8 },
+    Amomind { rd: u8, rs1: u8, rs2: u8 },
+    Amominuw { rd: u8, rs1: u8, rs2: u8 },
+    Amominud { rd: u8, rs1: u8, rs2: u8 },
 }
 
 #[derive(Debug, Hash, Eq, PartialEq)]
 pub enum Extension {
     I,
     M,
+    A,
 }
 
 impl Instruction {
@@ -231,6 +256,28 @@ impl Instruction {
             | Self::Divuw { .. }
             | Self::Remw { .. }
             | Self::Remuw { .. } => Some(Extension::M),
+            Self::Lrw { .. }
+            | Self::Lrd { .. }
+            | Self::Scw { .. }
+            | Self::Scd { .. }
+            | Self::Amoswapw { .. }
+            | Self::Amoswapd { .. }
+            | Self::Amoaddw { .. }
+            | Self::Amoaddd { .. }
+            | Self::Amoandw { .. }
+            | Self::Amoandd { .. }
+            | Self::Amoorw { .. }
+            | Self::Amoord { .. }
+            | Self::Amoxorw { .. }
+            | Self::Amoxord { .. }
+            | Self::Amomaxw { .. }
+            | Self::Amomaxd { .. }
+            | Self::Amomaxuw { .. }
+            | Self::Amomaxud { .. }
+            | Self::Amominw { .. }
+            | Self::Amomind { .. }
+            | Self::Amominuw { .. }
+            | Self::Amominud { .. } => Some(Extension::A),
         }
     }
 }
@@ -314,10 +361,32 @@ impl_pretty_print!(Instruction {
     Srlw,
     Srliw,
     Sraw,
-    Sraiw
+    Sraiw,
+    Lrw,
+    Lrd,
+    Scw,
+    Scd,
+    Amoswapw,
+    Amoswapd,
+    Amoaddw,
+    Amoaddd,
+    Amoandw,
+    Amoandd,
+    Amoorw,
+    Amoord,
+    Amoxorw,
+    Amoxord,
+    Amomaxw,
+    Amomaxd,
+    Amomaxuw,
+    Amomaxud,
+    Amominw,
+    Amomind,
+    Amominuw,
+    Amominud,
 });
 
-impl_pretty_print!(Extension { I, M });
+impl_pretty_print!(Extension { I, M, A });
 
 #[derive(Debug)]
 pub enum DecodeError {
@@ -702,6 +771,138 @@ impl TryFrom<u32> for Instruction {
             });
         } else if (raw & opcodes::MASK_REMUW) == opcodes::MATCH_REMUW {
             return Ok(Instruction::Remuw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_LR_W) == opcodes::MATCH_LR_W {
+            return Ok(Instruction::Lrw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_load(),
+            });
+        } else if (raw & opcodes::MASK_LR_D) == opcodes::MATCH_LR_D {
+            return Ok(Instruction::Lrd {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_load(),
+            });
+        } else if (raw & opcodes::MASK_SC_W) == opcodes::MATCH_SC_W {
+            return Ok(Instruction::Scw {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_store(),
+            });
+        } else if (raw & opcodes::MASK_SC_D) == opcodes::MATCH_SC_D {
+            return Ok(Instruction::Scd {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_store(),
+            });
+        } else if (raw & opcodes::MASK_AMOSWAP_W) == opcodes::MATCH_AMOSWAP_W {
+            return Ok(Instruction::Amoswapw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOSWAP_D) == opcodes::MATCH_AMOSWAP_D {
+            return Ok(Instruction::Amoswapd {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOADD_W) == opcodes::MATCH_AMOADD_W {
+            return Ok(Instruction::Amoaddw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOADD_D) == opcodes::MATCH_AMOADD_D {
+            return Ok(Instruction::Amoaddd {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOAND_W) == opcodes::MATCH_AMOAND_W {
+            return Ok(Instruction::Amoandw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOAND_D) == opcodes::MATCH_AMOAND_D {
+            return Ok(Instruction::Amoandd {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOOR_W) == opcodes::MATCH_AMOOR_W {
+            return Ok(Instruction::Amoorw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOOR_D) == opcodes::MATCH_AMOOR_D {
+            return Ok(Instruction::Amoord {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOXOR_W) == opcodes::MATCH_AMOXOR_W {
+            return Ok(Instruction::Amoxorw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOXOR_D) == opcodes::MATCH_AMOXOR_D {
+            return Ok(Instruction::Amoxord {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOMAX_W) == opcodes::MATCH_AMOMAX_W {
+            return Ok(Instruction::Amomaxw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOMAX_D) == opcodes::MATCH_AMOMAX_D {
+            return Ok(Instruction::Amomaxd {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOMAXU_W) == opcodes::MATCH_AMOMAXU_W {
+            return Ok(Instruction::Amomaxuw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOMAXU_D) == opcodes::MATCH_AMOMAXU_D {
+            return Ok(Instruction::Amomaxud {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOMIN_W) == opcodes::MATCH_AMOMIN_W {
+            return Ok(Instruction::Amominw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOMIN_D) == opcodes::MATCH_AMOMIN_D {
+            return Ok(Instruction::Amomind {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOMINU_W) == opcodes::MATCH_AMOMINU_W {
+            return Ok(Instruction::Amominuw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_AMOMINU_D) == opcodes::MATCH_AMOMINU_D {
+            return Ok(Instruction::Amominud {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
