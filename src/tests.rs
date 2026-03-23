@@ -59,6 +59,7 @@ test_instruction!(test_auipc, 0x4c4e2997, Auipc);
 test_instruction!(test_ecall, 0x00000073, Ecall);
 test_instruction!(test_ebreak, 0x00100073, Ebreak);
 test_instruction!(test_fence, 0x0a50000f, Fence);
+
 test_instruction!(test_mul, 0x026684b3, Mul);
 test_instruction!(test_mulh, 0x029f97b3, Mulh);
 test_instruction!(test_mulhu, 0x02b93eb3, Mulhu);
@@ -72,6 +73,7 @@ test_instruction!(test_divw, 0x0376c33b, Divw);
 test_instruction!(test_divuw, 0x0353d5bb, Divuw);
 test_instruction!(test_remw, 0x031962bb, Remw);
 test_instruction!(test_remuw, 0x032bf4bb, Remuw);
+
 test_instruction!(test_ld, 0x1c59b583, Ld);
 test_instruction!(test_sd, 0x989f3a23, Sd);
 test_instruction!(test_lwu, 0x977be683, Lwu);
@@ -84,3 +86,27 @@ test_instruction!(test_srlw, 0x00f4dfbb, Srlw);
 test_instruction!(test_srliw, 0x0089531b, Srliw);
 test_instruction!(test_sraw, 0x4179d33b, Sraw);
 test_instruction!(test_sraiw, 0x4059d31b, Sraiw);
+
+test_instruction!(test_lrw, 0x1005a52f, Lrw);
+test_instruction!(test_lrd, 0x1005b52f, Lrd);
+test_instruction!(test_scw, 0x18c5a52f, Scw);
+test_instruction!(test_scd, 0x18c5b52f, Scd);
+
+test_instruction!(test_amoswapw, 0x0861a9af, Amoswapw);
+test_instruction!(test_amoswapd, 0x0927b32f, Amoswapd);
+test_instruction!(test_amoaddw, 0x013622af, Amoaddw);
+test_instruction!(test_amoaddd, 0x0095b32f, Amoaddd);
+test_instruction!(test_amoandw, 0x6126a2af, Amoandw);
+test_instruction!(test_amoandd, 0x6095b32f, Amoandd);
+test_instruction!(test_amoorw, 0x4125a32f, Amoorw);
+test_instruction!(test_amoord, 0x4097332f, Amoord);
+test_instruction!(test_amoxorw, 0x2064a62f, Amoxorw);
+test_instruction!(test_amoxord, 0x20d4b5af, Amoxord);
+test_instruction!(test_amomaxw, 0xa13fa6af, Amomaxw);
+test_instruction!(test_amomaxd, 0xa127332f, Amomaxd);
+test_instruction!(test_amomaxuw, 0xe00324af, Amomaxuw);
+test_instruction!(test_amomaxud, 0xe127332f, Amomaxud);
+test_instruction!(test_amominw, 0x8096a2af, Amominw);
+test_instruction!(test_amomind, 0x8136332f, Amomind);
+test_instruction!(test_amominuw, 0xc097232f, Amominuw);
+test_instruction!(test_amominud, 0xc136b32f, Amominud);
