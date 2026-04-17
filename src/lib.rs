@@ -282,13 +282,13 @@ impl Instruction {
     }
 }
 
-macro_rules! impl_pretty_print {
+macro_rules! impl_display {
     ($enum_name:ident { $($variant:ident),* $(,)? }) => {
-        impl $enum_name {
-            pub fn pretty_print(&self) -> String {
+        impl ::std::fmt::Display for $enum_name {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
                 match self {
                     $(
-                        $enum_name::$variant { .. } => stringify!($variant).to_lowercase(),
+                        $enum_name::$variant { .. } => f.write_str(&stringify!($variant).to_lowercase()),
                     )*
                 }
             }
@@ -296,7 +296,7 @@ macro_rules! impl_pretty_print {
     };
 }
 
-impl_pretty_print!(Instruction {
+impl_display!(Instruction {
     Add,
     Sub,
     Sll,
@@ -386,7 +386,7 @@ impl_pretty_print!(Instruction {
     Amominud,
 });
 
-impl_pretty_print!(Extension { I, M, A });
+impl_display!(Extension { I, M, A });
 
 #[derive(Debug)]
 pub enum DecodeError {
