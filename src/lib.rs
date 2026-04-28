@@ -20,6 +20,9 @@ impl RawInstruction {
     fn rs2(&self) -> u8 {
         ((self.0 >> 20) & 0x1F) as u8
     }
+    fn rs3(&self) -> u8 {
+        ((self.0 >> 27) & 0x1F) as u8
+    }
     fn imm_store(&self) -> i16 {
         let imm_4_0 = (self.0 >> 7) & 0x1F;
         let imm_11_5 = (self.0 >> 25) & 0x7F;
@@ -181,7 +184,6 @@ pub enum Instruction {
     Amominud { rd: u8, rs1: u8, rs2: u8 },
 
     // RV32F
-
     Flw { rd: u8, rs1: u8, imm: u16 },
     Fsw { rs1: u8, rs2: u8, imm: i16 },
     Fmadd_s { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
@@ -210,7 +212,6 @@ pub enum Instruction {
     Fmv_w_x { rd: u8, rs1: u8 },
 
     // RV64F
-
     Fcvt_l_s { rd: u8, rs1: u8 },
     Fcvt_lu_s { rd: u8, rs1: u8 },
     Fcvt_s_l { rd: u8, rs1: u8 },
@@ -222,7 +223,7 @@ pub enum Extension {
     I,
     M,
     A,
-    F
+    F,
 }
 
 impl Instruction {
@@ -344,8 +345,7 @@ impl Instruction {
             | Self::Fcvt_l_s { .. }
             | Self::Fcvt_lu_s { .. }
             | Self::Fcvt_s_l { .. }
-            | Self::Fcvt_s_lu { .. }
-            => Some(Extension::F),
+            | Self::Fcvt_s_lu { .. } => Some(Extension::F),
         }
     }
 }
@@ -1018,6 +1018,165 @@ impl TryFrom<u32> for Instruction {
                 imm: instr.imm_store(),
             });
         } else if (raw & opcodes::MASK_FMADD_S) == opcodes::MATCH_FMADD_S {
+            return Ok(Instruction::Fmadd_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                rs3: instr.rs3(),
+            });
+        } else if (raw & opcodes::MASK_FMSUB_S) == opcodes::MATCH_FMSUB_S {
+            return Ok(Instruction::Fmsub_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                rs3: instr.rs3(),
+            });
+        } else if (raw & opcodes::MASK_FNMSUB_S) == opcodes::MATCH_FNMSUB_S {
+            return Ok(Instruction::Fnmsub_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                rs3: instr.rs3(),
+            });
+        } else if (raw & opcodes::MASK_FNMADD_S) == opcodes::MATCH_FNMADD_S {
+            return Ok(Instruction::Fnmadd_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                rs3: instr.rs3(),
+            });
+        } else if (raw & opcodes::MASK_FADD_S) == opcodes::MATCH_FADD_S {
+            return Ok(Instruction::Fadd_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FSUB_S) == opcodes::MATCH_FSUB_S {
+            return Ok(Instruction::Fsub_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FMUL_S) == opcodes::MATCH_FMUL_S {
+            return Ok(Instruction::Fmul_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FDIV_S) == opcodes::MATCH_FDIV_S {
+            return Ok(Instruction::Fdiv_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FSQRT_S) == opcodes::MATCH_FSQRT_S {
+            return Ok(Instruction::Fsqrt_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FSGNJ_S) == opcodes::MATCH_FSGNJ_S {
+            return Ok(Instruction::Fsgnj_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FSGNJN_S) == opcodes::MATCH_FSGNJN_S {
+            return Ok(Instruction::Fsgnjn_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FSGNJX_S) == opcodes::MATCH_FSGNJX_S {
+            return Ok(Instruction::Fsgnjx_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FMIN_S) == opcodes::MATCH_FMIN_S {
+            return Ok(Instruction::Fmin_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FMAX_S) == opcodes::MATCH_FMAX_S {
+            return Ok(Instruction::Fmax_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_W_S) == opcodes::MATCH_FCVT_W_S {
+            return Ok(Instruction::Fcvt_w_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_WU_S) == opcodes::MATCH_FCVT_WU_S {
+            return Ok(Instruction::Fcvt_wu_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FMV_X_W) == opcodes::MATCH_FMV_X_W {
+            return Ok(Instruction::Fmv_x_w {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FEQ_S) == opcodes::MATCH_FEQ_S {
+            return Ok(Instruction::Feq_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FLT_S) == opcodes::MATCH_FLT_S {
+            return Ok(Instruction::Flt_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FLE_S) == opcodes::MATCH_FLE_S {
+            return Ok(Instruction::Fle_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FCLASS_S) == opcodes::MATCH_FCLASS_S {
+            return Ok(Instruction::Fclass_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_S_W) == opcodes::MATCH_FCVT_S_W {
+            return Ok(Instruction::Fcvt_s_w {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_S_WU) == opcodes::MATCH_FCVT_S_WU {
+            return Ok(Instruction::Fcvt_s_wu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FMV_W_X) == opcodes::MATCH_FMV_W_X {
+            return Ok(Instruction::Fmv_w_x {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_L_S) == opcodes::MATCH_FCVT_L_S {
+            return Ok(Instruction::Fcvt_l_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_LU_S) == opcodes::MATCH_FCVT_LU_S {
+            return Ok(Instruction::Fcvt_lu_s {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_S_L) == opcodes::MATCH_FCVT_S_L {
+            return Ok(Instruction::Fcvt_s_l {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_S_LU) == opcodes::MATCH_FCVT_S_LU {
+            return Ok(Instruction::Fcvt_s_lu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
         }
 
         Err(DecodeError::InvalidSomething(raw))

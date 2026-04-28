@@ -109,3 +109,33 @@ test_instruction!(test_amominud, 0xc136b32f, Amominud, "amominud");
 
 test_instruction!(test_flw, 0x00c2a007, Flw, "flw");
 test_instruction!(test_fsw, 0x0209a027, Fsw, "fsw");
+
+test_instruction!(test_fmadd_s, 0x90117043, Fmadd_s, "fmadd_s");
+test_instruction!(test_fmsub_s, 0x90117047, Fmsub_s, "fmsub_s");
+test_instruction!(test_fnmsub_s, 0x9011704b, Fnmsub_s, "fnmsub_s");
+test_instruction!(test_fnmadd_s, 0x9011704f, Fnmadd_s, "fnmadd_s");
+test_instruction!(test_fadd_s, 0x0020a1d3, Fadd_s, "fadd_s");
+test_instruction!(test_fsub_s, 0x08747653, Fsub_s, "fsub_s");
+test_instruction!(test_fmul_s, 0x1025f453, Fmul_s, "fmul_s");
+test_instruction!(test_fdiv_s, 0x183170d3, Fdiv_s, "fdiv_s");
+test_instruction!(test_fsqrt_s, 0x5805f053, Fsqrt_s, "fsqrt_s");
+test_instruction!(test_fsgnj_s, 0x20a58053, Fsgnj_s, "fsgnj_s");
+test_instruction!(test_fsgnjn_s, 0x20a59053, Fsgnjn_s, "fsgnjn_s");
+test_instruction!(test_fsgnjx_s, 0x20a5a053, Fsgnjx_s, "fsgnjx_s");
+test_instruction!(test_fmin_s, 0x28228453, Fmin_s, "fmin_s");
+test_instruction!(test_fmax_s, 0x28229453, Fmax_s, "fmax_s");
+test_instruction!(test_fcvt_w_s, 0xc00081d3, Fcvt_w_s, "fcvt_w_s");
+test_instruction!(test_fcvt_wu_s, 0xc01091d3, Fcvt_wu_s, "fcvt_wu_s");
+test_instruction!(test_fmv_x_w, 0xe00081d3, Fmv_x_w, "fmv_x_w");
+test_instruction!(test_feq_s, 0xa020a1d3, Feq_s, "feq_s");
+test_instruction!(test_flt_s, 0xa02091d3, Flt_s, "flt_s");
+test_instruction!(test_fle_s, 0xa02081d3, Fle_s, "fle_s");
+test_instruction!(test_fclass_s, 0xe00091d3, Fclass_s, "fclass_s");
+test_instruction!(test_fcvt_s_w, 0xd00081d3, Fcvt_s_w, "fcvt_s_w");
+test_instruction!(test_fcvt_s_wu, 0xd01091d3, Fcvt_s_wu, "fcvt_s_wu");
+test_instruction!(test_fmv_w_x, 0xf00081d3, Fmv_w_x, "fmv_w_x");
+
+test_instruction!(test_fcvt_l_s, 0xc02081d3, Fcvt_l_s, "fcvt_l_s");
+test_instruction!(test_fcvt_lu_s, 0xc03091d3, Fcvt_lu_s, "fcvt_lu_s");
+test_instruction!(test_fcvt_s_l, 0xd02081d3, Fcvt_s_l, "fcvt_s_l");
+test_instruction!(test_fcvt_s_lu, 0xd03091d3, Fcvt_s_lu, "fcvt_s_lu");
