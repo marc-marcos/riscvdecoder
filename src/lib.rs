@@ -179,6 +179,42 @@ pub enum Instruction {
     Amomind { rd: u8, rs1: u8, rs2: u8 },
     Amominuw { rd: u8, rs1: u8, rs2: u8 },
     Amominud { rd: u8, rs1: u8, rs2: u8 },
+
+    // RV32F
+
+    Flw { rd: u8, rs1: u8, imm: u16 },
+    Fsw { rs1: u8, rs2: u8, imm: i16 },
+    Fmadd_s { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    Fmsub_s { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    Fnmsub_s { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    Fnmadd_s { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    Fadd_s { rd: u8, rs1: u8, rs2: u8 },
+    Fsub_s { rd: u8, rs1: u8, rs2: u8 },
+    Fmul_s { rd: u8, rs1: u8, rs2: u8 },
+    Fdiv_s { rd: u8, rs1: u8, rs2: u8 },
+    Fsqrt_s { rd: u8, rs1: u8 },
+    Fsgnj_s { rd: u8, rs1: u8, rs2: u8 },
+    Fsgnjn_s { rd: u8, rs1: u8, rs2: u8 },
+    Fsgnjx_s { rd: u8, rs1: u8, rs2: u8 },
+    Fmin_s { rd: u8, rs1: u8, rs2: u8 },
+    Fmax_s { rd: u8, rs1: u8, rs2: u8 },
+    Fcvt_w_s { rd: u8, rs1: u8 },
+    Fcvt_wu_s { rd: u8, rs1: u8 },
+    Fmv_x_w { rd: u8, rs1: u8 },
+    Feq_s { rd: u8, rs1: u8, rs2: u8 },
+    Flt_s { rd: u8, rs1: u8, rs2: u8 },
+    Fle_s { rd: u8, rs1: u8, rs2: u8 },
+    Fclass_s { rd: u8, rs1: u8 },
+    Fcvt_s_w { rd: u8, rs1: u8 },
+    Fcvt_s_wu { rd: u8, rs1: u8 },
+    Fmv_w_x { rd: u8, rs1: u8 },
+
+    // RV64F
+
+    Fcvt_l_s { rd: u8, rs1: u8 },
+    Fcvt_lu_s { rd: u8, rs1: u8 },
+    Fcvt_s_l { rd: u8, rs1: u8 },
+    Fcvt_s_lu { rd: u8, rs1: u8 },
 }
 
 #[derive(Debug, Hash, Eq, PartialEq)]
@@ -186,6 +222,7 @@ pub enum Extension {
     I,
     M,
     A,
+    F
 }
 
 impl Instruction {
@@ -278,6 +315,37 @@ impl Instruction {
             | Self::Amomind { .. }
             | Self::Amominuw { .. }
             | Self::Amominud { .. } => Some(Extension::A),
+            Self::Flw { .. }
+            | Self::Fsw { .. }
+            | Self::Fmadd_s { .. }
+            | Self::Fmsub_s { .. }
+            | Self::Fnmsub_s { .. }
+            | Self::Fnmadd_s { .. }
+            | Self::Fadd_s { .. }
+            | Self::Fsub_s { .. }
+            | Self::Fmul_s { .. }
+            | Self::Fdiv_s { .. }
+            | Self::Fsqrt_s { .. }
+            | Self::Fsgnj_s { .. }
+            | Self::Fsgnjn_s { .. }
+            | Self::Fsgnjx_s { .. }
+            | Self::Fmin_s { .. }
+            | Self::Fmax_s { .. }
+            | Self::Fcvt_w_s { .. }
+            | Self::Fcvt_wu_s { .. }
+            | Self::Fmv_x_w { .. }
+            | Self::Feq_s { .. }
+            | Self::Flt_s { .. }
+            | Self::Fle_s { .. }
+            | Self::Fclass_s { .. }
+            | Self::Fcvt_s_w { .. }
+            | Self::Fcvt_s_wu { .. }
+            | Self::Fmv_w_x { .. }
+            | Self::Fcvt_l_s { .. }
+            | Self::Fcvt_lu_s { .. }
+            | Self::Fcvt_s_l { .. }
+            | Self::Fcvt_s_lu { .. }
+            => Some(Extension::F),
         }
     }
 }
@@ -384,9 +452,39 @@ impl_display!(Instruction {
     Amomind,
     Amominuw,
     Amominud,
+    Flw,
+    Fsw,
+    Fmadd_s,
+    Fmsub_s,
+    Fnmsub_s,
+    Fnmadd_s,
+    Fadd_s,
+    Fsub_s,
+    Fmul_s,
+    Fdiv_s,
+    Fsqrt_s,
+    Fsgnj_s,
+    Fsgnjn_s,
+    Fsgnjx_s,
+    Fmin_s,
+    Fmax_s,
+    Fcvt_w_s,
+    Fcvt_wu_s,
+    Fmv_x_w,
+    Feq_s,
+    Flt_s,
+    Fle_s,
+    Fclass_s,
+    Fcvt_s_w,
+    Fcvt_s_wu,
+    Fmv_w_x,
+    Fcvt_l_s,
+    Fcvt_lu_s,
+    Fcvt_s_l,
+    Fcvt_s_lu
 });
 
-impl_display!(Extension { I, M, A });
+impl_display!(Extension { I, M, A, F });
 
 #[derive(Debug)]
 pub enum DecodeError {
@@ -907,6 +1005,19 @@ impl TryFrom<u32> for Instruction {
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
+        } else if (raw & opcodes::MASK_FLW) == opcodes::MATCH_FLW {
+            return Ok(Instruction::Flw {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_load(),
+            });
+        } else if (raw & opcodes::MASK_FSW) == opcodes::MATCH_FSW {
+            return Ok(Instruction::Fsw {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_store(),
+            });
+        } else if (raw & opcodes::MASK_FMADD_S) == opcodes::MATCH_FMADD_S {
         }
 
         Err(DecodeError::InvalidSomething(raw))

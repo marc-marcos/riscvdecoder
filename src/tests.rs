@@ -106,3 +106,6 @@ test_instruction!(test_amominw, 0x8096a2af, Amominw, "amominw");
 test_instruction!(test_amomind, 0x8136332f, Amomind, "amomind");
 test_instruction!(test_amominuw, 0xc097232f, Amominuw, "amominuw");
 test_instruction!(test_amominud, 0xc136b32f, Amominud, "amominud");
+
+test_instruction!(test_flw, 0x00c2a007, Flw, "flw");
+test_instruction!(test_fsw, 0x0209a027, Fsw, "fsw");

@@ -9,5 +9,6 @@ Simple library to decode RISC-V instructions and find to which extension do they
 - [X] Use [riscv-opcodes](https://github.com/riscv/riscv-opcodes) as source of truth.
 - [X] RV64I
 - [X] A
-- [ ] F & D
+- [?] F & D
+- [ ] Modularize the file structure, one file for each extension.
 - [ ] Zicsr & Zifencei
