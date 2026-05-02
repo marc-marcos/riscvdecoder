@@ -7,6 +7,8 @@ pub mod opcodes {
 #[cfg(test)]
 mod tests;
 
+pub mod targets;
+
 #[derive(Debug)]
 struct RawInstruction(u32);
 
