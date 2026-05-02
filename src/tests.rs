@@ -8,7 +8,7 @@ macro_rules! test_instruction {
         fn $test_name() {
             let raw: u32 = $raw_hex;
             let instr = Instruction::try_from(raw);
-            
+
             assert_matches!(instr, Ok(Instruction::$variant { .. }));
             assert_eq!(instr.unwrap().to_string(), $display);
         }
