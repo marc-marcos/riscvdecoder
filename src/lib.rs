@@ -188,36 +188,72 @@ pub enum Instruction {
     // RV32F
     Flw { rd: u8, rs1: u8, imm: u16 },
     Fsw { rs1: u8, rs2: u8, imm: i16 },
-    Fmadd_s { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
-    Fmsub_s { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
-    Fnmsub_s { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
-    Fnmadd_s { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
-    Fadd_s { rd: u8, rs1: u8, rs2: u8 },
-    Fsub_s { rd: u8, rs1: u8, rs2: u8 },
-    Fmul_s { rd: u8, rs1: u8, rs2: u8 },
-    Fdiv_s { rd: u8, rs1: u8, rs2: u8 },
-    Fsqrt_s { rd: u8, rs1: u8 },
-    Fsgnj_s { rd: u8, rs1: u8, rs2: u8 },
-    Fsgnjn_s { rd: u8, rs1: u8, rs2: u8 },
-    Fsgnjx_s { rd: u8, rs1: u8, rs2: u8 },
-    Fmin_s { rd: u8, rs1: u8, rs2: u8 },
-    Fmax_s { rd: u8, rs1: u8, rs2: u8 },
-    Fcvt_w_s { rd: u8, rs1: u8 },
-    Fcvt_wu_s { rd: u8, rs1: u8 },
-    Fmv_x_w { rd: u8, rs1: u8 },
-    Feq_s { rd: u8, rs1: u8, rs2: u8 },
-    Flt_s { rd: u8, rs1: u8, rs2: u8 },
-    Fle_s { rd: u8, rs1: u8, rs2: u8 },
-    Fclass_s { rd: u8, rs1: u8 },
-    Fcvt_s_w { rd: u8, rs1: u8 },
-    Fcvt_s_wu { rd: u8, rs1: u8 },
-    Fmv_w_x { rd: u8, rs1: u8 },
+    FmaddS { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    FmsubS { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    FnmsubS { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    FnmaddS { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    FaddS { rd: u8, rs1: u8, rs2: u8 },
+    FsubS { rd: u8, rs1: u8, rs2: u8 },
+    FmulS { rd: u8, rs1: u8, rs2: u8 },
+    FdivS { rd: u8, rs1: u8, rs2: u8 },
+    FsqrtS { rd: u8, rs1: u8 },
+    FsgnjS { rd: u8, rs1: u8, rs2: u8 },
+    FsgnjnS { rd: u8, rs1: u8, rs2: u8 },
+    FsgnjxS { rd: u8, rs1: u8, rs2: u8 },
+    FminS { rd: u8, rs1: u8, rs2: u8 },
+    FmaxS { rd: u8, rs1: u8, rs2: u8 },
+    FcvtWS { rd: u8, rs1: u8 },
+    FcvtWuS { rd: u8, rs1: u8 },
+    FmvXW { rd: u8, rs1: u8 },
+    FeqS { rd: u8, rs1: u8, rs2: u8 },
+    FltS { rd: u8, rs1: u8, rs2: u8 },
+    FleS { rd: u8, rs1: u8, rs2: u8 },
+    FclassS { rd: u8, rs1: u8 },
+    FcvtSW { rd: u8, rs1: u8 },
+    FcvtSWu { rd: u8, rs1: u8 },
+    FmvWX { rd: u8, rs1: u8 },
 
     // RV64F
-    Fcvt_l_s { rd: u8, rs1: u8 },
-    Fcvt_lu_s { rd: u8, rs1: u8 },
-    Fcvt_s_l { rd: u8, rs1: u8 },
-    Fcvt_s_lu { rd: u8, rs1: u8 },
+    FcvtLS { rd: u8, rs1: u8 },
+    FcvtLuS { rd: u8, rs1: u8 },
+    FcvtSL { rd: u8, rs1: u8 },
+    FcvtSLu { rd: u8, rs1: u8 },
+
+    // RV32D
+    Fld { rd: u8, rs1: u8, imm: u16 },
+    Fsd { rs1: u8, rs2: u8, imm: i16 },
+    FmaddD { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    FmsubD { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    FnmsubD { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    FnmaddD { rs1: u8, rs2: u8, rs3: u8, rd: u8 },
+    FaddD { rd: u8, rs1: u8, rs2: u8 },
+    FsubD { rd: u8, rs1: u8, rs2: u8 },
+    FmulD { rd: u8, rs1: u8, rs2: u8 },
+    FdivD { rd: u8, rs1: u8, rs2: u8 },
+    FsqrtD { rd: u8, rs1: u8 },
+    FsgnjD { rd: u8, rs1: u8, rs2: u8 },
+    FsgnjnD { rd: u8, rs1: u8, rs2: u8 },
+    FsgnjxD { rd: u8, rs1: u8, rs2: u8 },
+    FminD { rd: u8, rs1: u8, rs2: u8 },
+    FmaxD { rd: u8, rs1: u8, rs2: u8 },
+    FcvtSD { rd: u8, rs1: u8 },
+    FcvtDS { rd: u8, rs1: u8 },
+    FeqD { rd: u8, rs1: u8, rs2: u8 },
+    FltD { rd: u8, rs1: u8, rs2: u8 },
+    FleD { rd: u8, rs1: u8, rs2: u8 },
+    FclassD { rd: u8, rs1: u8 },
+    FcvtWD { rd: u8, rs1: u8 },
+    FcvtWuD { rd: u8, rs1: u8 },
+    FcvtDW { rd: u8, rs1: u8 },
+    FcvtDWu { rd: u8, rs1: u8 },
+
+    // RV64D
+    FcvtLD { rd: u8, rs1: u8 },
+    FcvtLuD { rd: u8, rs1: u8 },
+    FmvXD { rd: u8, rs1: u8 },
+    FcvtDL { rd: u8, rs1: u8 },
+    FcvtDLu { rd: u8, rs1: u8 },
+    FmvDX { rd: u8, rs1: u8 },
 }
 
 #[derive(Debug, Hash, Eq, PartialEq)]
@@ -226,6 +262,7 @@ pub enum Extension {
     M,
     A,
     F,
+    D,
 }
 
 impl Instruction {
@@ -320,34 +357,66 @@ impl Instruction {
             | Self::Amominud { .. } => Some(Extension::A),
             Self::Flw { .. }
             | Self::Fsw { .. }
-            | Self::Fmadd_s { .. }
-            | Self::Fmsub_s { .. }
-            | Self::Fnmsub_s { .. }
-            | Self::Fnmadd_s { .. }
-            | Self::Fadd_s { .. }
-            | Self::Fsub_s { .. }
-            | Self::Fmul_s { .. }
-            | Self::Fdiv_s { .. }
-            | Self::Fsqrt_s { .. }
-            | Self::Fsgnj_s { .. }
-            | Self::Fsgnjn_s { .. }
-            | Self::Fsgnjx_s { .. }
-            | Self::Fmin_s { .. }
-            | Self::Fmax_s { .. }
-            | Self::Fcvt_w_s { .. }
-            | Self::Fcvt_wu_s { .. }
-            | Self::Fmv_x_w { .. }
-            | Self::Feq_s { .. }
-            | Self::Flt_s { .. }
-            | Self::Fle_s { .. }
-            | Self::Fclass_s { .. }
-            | Self::Fcvt_s_w { .. }
-            | Self::Fcvt_s_wu { .. }
-            | Self::Fmv_w_x { .. }
-            | Self::Fcvt_l_s { .. }
-            | Self::Fcvt_lu_s { .. }
-            | Self::Fcvt_s_l { .. }
-            | Self::Fcvt_s_lu { .. } => Some(Extension::F),
+            | Self::FmaddS { .. }
+            | Self::FmsubS { .. }
+            | Self::FnmsubS { .. }
+            | Self::FnmaddS { .. }
+            | Self::FaddS { .. }
+            | Self::FsubS { .. }
+            | Self::FmulS { .. }
+            | Self::FdivS { .. }
+            | Self::FsqrtS { .. }
+            | Self::FsgnjS { .. }
+            | Self::FsgnjnS { .. }
+            | Self::FsgnjxS { .. }
+            | Self::FminS { .. }
+            | Self::FmaxS { .. }
+            | Self::FcvtWS { .. }
+            | Self::FcvtWuS { .. }
+            | Self::FmvXW { .. }
+            | Self::FeqS { .. }
+            | Self::FltS { .. }
+            | Self::FleS { .. }
+            | Self::FclassS { .. }
+            | Self::FcvtSW { .. }
+            | Self::FcvtSWu { .. }
+            | Self::FmvWX { .. }
+            | Self::FcvtLS { .. }
+            | Self::FcvtLuS { .. }
+            | Self::FcvtSL { .. }
+            | Self::FcvtSLu { .. } => Some(Extension::F),
+            Self::Fld { .. }
+            | Self::Fsd { .. }
+            | Self::FmaddD { .. }
+            | Self::FmsubD { .. }
+            | Self::FnmsubD { .. }
+            | Self::FnmaddD { .. }
+            | Self::FaddD { .. }
+            | Self::FsubD { .. }
+            | Self::FmulD { .. }
+            | Self::FdivD { .. }
+            | Self::FsqrtD { .. }
+            | Self::FsgnjD { .. }
+            | Self::FsgnjnD { .. }
+            | Self::FsgnjxD { .. }
+            | Self::FminD { .. }
+            | Self::FmaxD { .. }
+            | Self::FcvtSD { .. }
+            | Self::FcvtDS { .. }
+            | Self::FeqD { .. }
+            | Self::FltD { .. }
+            | Self::FleD { .. }
+            | Self::FclassD { .. }
+            | Self::FcvtWD { .. }
+            | Self::FcvtWuD { .. }
+            | Self::FcvtDW { .. }
+            | Self::FcvtDWu { .. }
+            | Self::FcvtLD { .. }
+            | Self::FcvtLuD { .. }
+            | Self::FmvXD { .. }
+            | Self::FcvtDL { .. }
+            | Self::FcvtDLu { .. }
+            | Self::FmvDX { .. } => Some(Extension::D),
         }
     }
 }
@@ -456,37 +525,69 @@ impl_display!(Instruction {
     Amominud,
     Flw,
     Fsw,
-    Fmadd_s,
-    Fmsub_s,
-    Fnmsub_s,
-    Fnmadd_s,
-    Fadd_s,
-    Fsub_s,
-    Fmul_s,
-    Fdiv_s,
-    Fsqrt_s,
-    Fsgnj_s,
-    Fsgnjn_s,
-    Fsgnjx_s,
-    Fmin_s,
-    Fmax_s,
-    Fcvt_w_s,
-    Fcvt_wu_s,
-    Fmv_x_w,
-    Feq_s,
-    Flt_s,
-    Fle_s,
-    Fclass_s,
-    Fcvt_s_w,
-    Fcvt_s_wu,
-    Fmv_w_x,
-    Fcvt_l_s,
-    Fcvt_lu_s,
-    Fcvt_s_l,
-    Fcvt_s_lu
+    FmaddS,
+    FmsubS,
+    FnmsubS,
+    FnmaddS,
+    FaddS,
+    FsubS,
+    FmulS,
+    FdivS,
+    FsqrtS,
+    FsgnjS,
+    FsgnjnS,
+    FsgnjxS,
+    FminS,
+    FmaxS,
+    FcvtWS,
+    FcvtWuS,
+    FmvXW,
+    FeqS,
+    FltS,
+    FleS,
+    FclassS,
+    FcvtSW,
+    FcvtSWu,
+    FmvWX,
+    FcvtLS,
+    FcvtLuS,
+    FcvtSL,
+    FcvtSLu,
+    Fld,
+    Fsd,
+    FmaddD,
+    FmsubD,
+    FnmsubD,
+    FnmaddD,
+    FaddD,
+    FsubD,
+    FmulD,
+    FdivD,
+    FsqrtD,
+    FsgnjD,
+    FsgnjnD,
+    FsgnjxD,
+    FminD,
+    FmaxD,
+    FcvtSD,
+    FcvtDS,
+    FeqD,
+    FltD,
+    FleD,
+    FclassD,
+    FcvtWD,
+    FcvtWuD,
+    FcvtDW,
+    FcvtDWu,
+    FcvtLD,
+    FcvtLuD,
+    FmvXD,
+    FcvtDL,
+    FcvtDLu,
+    FmvDX
 });
 
-impl_display!(Extension { I, M, A, F });
+impl_display!(Extension { I, M, A, F, D });
 
 #[derive(Debug)]
 pub enum DecodeError {
@@ -1020,162 +1121,344 @@ impl TryFrom<u32> for Instruction {
                 imm: instr.imm_store(),
             });
         } else if (raw & opcodes::MASK_FMADD_S) == opcodes::MATCH_FMADD_S {
-            return Ok(Instruction::Fmadd_s {
+            return Ok(Instruction::FmaddS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
                 rs3: instr.rs3(),
             });
         } else if (raw & opcodes::MASK_FMSUB_S) == opcodes::MATCH_FMSUB_S {
-            return Ok(Instruction::Fmsub_s {
+            return Ok(Instruction::FmsubS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
                 rs3: instr.rs3(),
             });
         } else if (raw & opcodes::MASK_FNMSUB_S) == opcodes::MATCH_FNMSUB_S {
-            return Ok(Instruction::Fnmsub_s {
+            return Ok(Instruction::FnmsubS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
                 rs3: instr.rs3(),
             });
         } else if (raw & opcodes::MASK_FNMADD_S) == opcodes::MATCH_FNMADD_S {
-            return Ok(Instruction::Fnmadd_s {
+            return Ok(Instruction::FnmaddS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
                 rs3: instr.rs3(),
             });
         } else if (raw & opcodes::MASK_FADD_S) == opcodes::MATCH_FADD_S {
-            return Ok(Instruction::Fadd_s {
+            return Ok(Instruction::FaddS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FSUB_S) == opcodes::MATCH_FSUB_S {
-            return Ok(Instruction::Fsub_s {
+            return Ok(Instruction::FsubS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FMUL_S) == opcodes::MATCH_FMUL_S {
-            return Ok(Instruction::Fmul_s {
+            return Ok(Instruction::FmulS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FDIV_S) == opcodes::MATCH_FDIV_S {
-            return Ok(Instruction::Fdiv_s {
+            return Ok(Instruction::FdivS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FSQRT_S) == opcodes::MATCH_FSQRT_S {
-            return Ok(Instruction::Fsqrt_s {
+            return Ok(Instruction::FsqrtS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
         } else if (raw & opcodes::MASK_FSGNJ_S) == opcodes::MATCH_FSGNJ_S {
-            return Ok(Instruction::Fsgnj_s {
+            return Ok(Instruction::FsgnjS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FSGNJN_S) == opcodes::MATCH_FSGNJN_S {
-            return Ok(Instruction::Fsgnjn_s {
+            return Ok(Instruction::FsgnjnS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FSGNJX_S) == opcodes::MATCH_FSGNJX_S {
-            return Ok(Instruction::Fsgnjx_s {
+            return Ok(Instruction::FsgnjxS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FMIN_S) == opcodes::MATCH_FMIN_S {
-            return Ok(Instruction::Fmin_s {
+            return Ok(Instruction::FminS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FMAX_S) == opcodes::MATCH_FMAX_S {
-            return Ok(Instruction::Fmax_s {
+            return Ok(Instruction::FmaxS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FCVT_W_S) == opcodes::MATCH_FCVT_W_S {
-            return Ok(Instruction::Fcvt_w_s {
+            return Ok(Instruction::FcvtWS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
         } else if (raw & opcodes::MASK_FCVT_WU_S) == opcodes::MATCH_FCVT_WU_S {
-            return Ok(Instruction::Fcvt_wu_s {
+            return Ok(Instruction::FcvtWuS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
         } else if (raw & opcodes::MASK_FMV_X_W) == opcodes::MATCH_FMV_X_W {
-            return Ok(Instruction::Fmv_x_w {
+            return Ok(Instruction::FmvXW {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
         } else if (raw & opcodes::MASK_FEQ_S) == opcodes::MATCH_FEQ_S {
-            return Ok(Instruction::Feq_s {
+            return Ok(Instruction::FeqS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FLT_S) == opcodes::MATCH_FLT_S {
-            return Ok(Instruction::Flt_s {
+            return Ok(Instruction::FltS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FLE_S) == opcodes::MATCH_FLE_S {
-            return Ok(Instruction::Fle_s {
+            return Ok(Instruction::FleS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
                 rs2: instr.rs2(),
             });
         } else if (raw & opcodes::MASK_FCLASS_S) == opcodes::MATCH_FCLASS_S {
-            return Ok(Instruction::Fclass_s {
+            return Ok(Instruction::FclassS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
         } else if (raw & opcodes::MASK_FCVT_S_W) == opcodes::MATCH_FCVT_S_W {
-            return Ok(Instruction::Fcvt_s_w {
+            return Ok(Instruction::FcvtSW {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
         } else if (raw & opcodes::MASK_FCVT_S_WU) == opcodes::MATCH_FCVT_S_WU {
-            return Ok(Instruction::Fcvt_s_wu {
+            return Ok(Instruction::FcvtSWu {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
         } else if (raw & opcodes::MASK_FMV_W_X) == opcodes::MATCH_FMV_W_X {
-            return Ok(Instruction::Fmv_w_x {
+            return Ok(Instruction::FmvWX {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
         } else if (raw & opcodes::MASK_FCVT_L_S) == opcodes::MATCH_FCVT_L_S {
-            return Ok(Instruction::Fcvt_l_s {
+            return Ok(Instruction::FcvtLS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
         } else if (raw & opcodes::MASK_FCVT_LU_S) == opcodes::MATCH_FCVT_LU_S {
-            return Ok(Instruction::Fcvt_lu_s {
+            return Ok(Instruction::FcvtLuS {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
         } else if (raw & opcodes::MASK_FCVT_S_L) == opcodes::MATCH_FCVT_S_L {
-            return Ok(Instruction::Fcvt_s_l {
+            return Ok(Instruction::FcvtSL {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
         } else if (raw & opcodes::MASK_FCVT_S_LU) == opcodes::MATCH_FCVT_S_LU {
-            return Ok(Instruction::Fcvt_s_lu {
+            return Ok(Instruction::FcvtSLu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FLD) == opcodes::MATCH_FLD {
+            return Ok(Instruction::Fld {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                imm: instr.imm_load(),
+            });
+        } else if (raw & opcodes::MASK_FSD) == opcodes::MATCH_FSD {
+            return Ok(Instruction::Fsd {
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                imm: instr.imm_store(),
+            });
+        } else if (raw & opcodes::MASK_FMADD_D) == opcodes::MATCH_FMADD_D {
+            return Ok(Instruction::FmaddD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                rs3: instr.rs3(),
+            });
+        } else if (raw & opcodes::MASK_FMSUB_D) == opcodes::MATCH_FMSUB_D {
+            return Ok(Instruction::FmsubD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                rs3: instr.rs3(),
+            });
+        } else if (raw & opcodes::MASK_FNMSUB_D) == opcodes::MATCH_FNMSUB_D {
+            return Ok(Instruction::FnmsubD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                rs3: instr.rs3(),
+            });
+        } else if (raw & opcodes::MASK_FNMADD_D) == opcodes::MATCH_FNMADD_D {
+            return Ok(Instruction::FnmaddD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+                rs3: instr.rs3(),
+            });
+        } else if (raw & opcodes::MASK_FADD_D) == opcodes::MATCH_FADD_D {
+            return Ok(Instruction::FaddD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FSUB_D) == opcodes::MATCH_FSUB_D {
+            return Ok(Instruction::FsubD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FMUL_D) == opcodes::MATCH_FMUL_D {
+            return Ok(Instruction::FmulD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FDIV_D) == opcodes::MATCH_FDIV_D {
+            return Ok(Instruction::FdivD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FSQRT_D) == opcodes::MATCH_FSQRT_D {
+            return Ok(Instruction::FsqrtD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FSGNJ_D) == opcodes::MATCH_FSGNJ_D {
+            return Ok(Instruction::FsgnjD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FSGNJN_D) == opcodes::MATCH_FSGNJN_D {
+            return Ok(Instruction::FsgnjnD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FSGNJX_D) == opcodes::MATCH_FSGNJX_D {
+            return Ok(Instruction::FsgnjxD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FMIN_D) == opcodes::MATCH_FMIN_D {
+            return Ok(Instruction::FminD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FMAX_D) == opcodes::MATCH_FMAX_D {
+            return Ok(Instruction::FmaxD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_S_D) == opcodes::MATCH_FCVT_S_D {
+            return Ok(Instruction::FcvtSD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_D_S) == opcodes::MATCH_FCVT_D_S {
+            return Ok(Instruction::FcvtDS {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FEQ_D) == opcodes::MATCH_FEQ_D {
+            return Ok(Instruction::FeqD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FLT_D) == opcodes::MATCH_FLT_D {
+            return Ok(Instruction::FltD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FLE_D) == opcodes::MATCH_FLE_D {
+            return Ok(Instruction::FleD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+                rs2: instr.rs2(),
+            });
+        } else if (raw & opcodes::MASK_FCLASS_D) == opcodes::MATCH_FCLASS_D {
+            return Ok(Instruction::FclassD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_W_D) == opcodes::MATCH_FCVT_W_D {
+            return Ok(Instruction::FcvtWD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_WU_D) == opcodes::MATCH_FCVT_WU_D {
+            return Ok(Instruction::FcvtWuD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_D_W) == opcodes::MATCH_FCVT_D_W {
+            return Ok(Instruction::FcvtDW {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_D_WU) == opcodes::MATCH_FCVT_D_WU {
+            return Ok(Instruction::FcvtDWu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_L_D) == opcodes::MATCH_FCVT_L_D {
+            return Ok(Instruction::FcvtLD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_LU_D) == opcodes::MATCH_FCVT_LU_D {
+            return Ok(Instruction::FcvtLuD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FMV_X_D) == opcodes::MATCH_FMV_X_D {
+            return Ok(Instruction::FmvXD {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_D_L) == opcodes::MATCH_FCVT_D_L {
+            return Ok(Instruction::FcvtDL {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FCVT_D_LU) == opcodes::MATCH_FCVT_D_LU {
+            return Ok(Instruction::FcvtDLu {
+                rd: instr.rd(),
+                rs1: instr.rs1(),
+            });
+        } else if (raw & opcodes::MASK_FMV_D_X) == opcodes::MATCH_FMV_D_X {
+            return Ok(Instruction::FmvDX {
                 rd: instr.rd(),
                 rs1: instr.rs1(),
             });
